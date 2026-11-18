@@ -3,9 +3,10 @@
 # CALM CLI: @finos/calm-cli 1.73.0  |  Node v24.19.0  |  run 2026-11-18T08:38Z
 # Command (run from the steel-thread repo root, as documented in its README):
 #   calm validate -a architecture/loan-approval.calm.json -u architecture/url-to-local-file-mapping.json -f pretty
-# Output below is verbatim except ANSI colour codes stripped.
+# Output below is verbatim except: ANSI colour codes stripped, and the absolute local
+# path in the loader line replaced with a path relative to the steel-thread repo root.
 
-info [file-system-document-loader]:     C:\Xue\A_Xue_Workspace\Hackathon\FINOS_Fall_2026_Hackathon\sources\ai-steel-thread-demo\architecture\loan-approval.calm.json exists, loading as file...
+info [file-system-document-loader]:     architecture\loan-approval.calm.json exists, loading as file...
 Summary
 - Errors: no (0)
 - Warnings: no (0)

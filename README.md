@@ -12,11 +12,14 @@ Governance-as-Code expresses AI controls as JSON (CALM architectures and control
 
 ### Planned features
 
-- Read a CALM architecture document and collect the controls attached to its nodes, relationships and flows.
-- Map those controls to AIGF risks and mitigations using a small, source-attributed mapping file.
-- Flag AIGF risks that no control in the architecture covers.
-- Export an Excel workbook with one traceable row per risk → mitigation → control → evidence, plus a gaps sheet.
-- Provide a CI check (exit code non-zero) that fails a build when uncovered risks exist.
+- Read a CALM 1.2 architecture and collect the controls attached to its nodes, relationships and flows, including the AIGF risks and mitigations each control already declares (`aigf-risks`, `aigf-mitigations`). There is no separate hand-written mapping.
+- Take the expected risks from the AIGF use case the architecture names (for the Steel Thread, UC-3 Loan Approval).
+- Report AIGF risks that no control claims to cover. This is the CI-failing gap check.
+- Cross-check claims against AIGF's own `mitigates` links, and warn about unsupported claims and risks that are possibly covered but not claimed.
+- Export an Excel workbook that traces risk → mitigation → control → architecture element → evidence (labelled "declared"), with Gaps and Findings sheets.
+- Provide a `check` command that exits non-zero when claims-based gaps exist, for use in CI.
+
+Design decisions and data provenance are recorded in [docs/decisions.md](docs/decisions.md) and [docs/data-sources.md](docs/data-sources.md).
 
 ## Installation
 
