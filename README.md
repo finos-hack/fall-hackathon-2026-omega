@@ -26,7 +26,7 @@ Workbook sheets:
 | Sheet | Contents |
 |---|---|
 | **Summary** | Coverage result (`GAPS FOUND (n errors, n warnings)` / `NO GAPS FOUND`), AIGF use case, counts, expected-risk coverage table, generation time, tool version, source commit SHAs, architecture file SHA-256 |
-| **Traceability** | One row per risk → control → mitigation → architecture element, with a coverage basis: *Claimed & AIGF-supported*, *Claimed – not in AIGF (unsupported)*, *Not claimed – AIGF suggests may cover*, or *GAP – nothing addresses this risk* (with candidate AIGF mitigations) |
+| **Traceability** | One row per risk → control → mitigation → architecture element, with a coverage basis: *Claimed & AIGF-supported*, *Claimed – not in AIGF (unsupported)*, *Not claimed – AIGF suggests may cover* (risk has no supported claim), *Additional AIGF-suggested coverage (not claimed)* (risk is already covered; shown in light blue, not a finding), or *GAP – nothing addresses this risk* (with candidate AIGF mitigations) |
 | **Findings** | Severity, type, risk, mitigation, control, element, plain-English explanation and recommended action, plus blank **Owner / Action / Due date / Status** columns for the reviewer |
 | **Evidence Checklist** | One row per declared control requirement: the evidence the architecture declares, plus blank **Evidence location / Reviewer / Date reviewed / Result** (Pass / Fail / N/A) |
 | **Sources** | Repositories, commits, licenses and the AIGF CC-BY-4.0 attribution |
@@ -127,8 +127,6 @@ Exit policy    : --fail-on error -> exit 1
 | INFO | DRAFT REFERENCE | uc-3 | The UC-3 Loan Approval use case is Draft in AIGF, so the expected-risk list may change. |
 
 ## Screenshots
-
-> Images to be added.
 
 ![Workbook Summary sheet](docs/img/workbook-summary.png)
 
