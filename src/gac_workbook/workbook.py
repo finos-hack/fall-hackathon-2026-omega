@@ -10,7 +10,8 @@ import hashlib
 import json
 import re
 import subprocess
-from dataclasses import dataclass
+import math
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -40,10 +41,12 @@ TRACEABILITY_HEADERS = [
 BASIS_SUPPORTED = "Claimed & AIGF-supported"
 BASIS_UNSUPPORTED = "Claimed – not in AIGF (unsupported)"
 BASIS_IMPLIED = "Not claimed – AIGF suggests may cover"
+BASIS_ADDITIONAL = "Additional AIGF-suggested coverage (not claimed)"  # implied, but the risk is already Covered
 BASIS_GAP = "GAP – nothing addresses this risk"
 NO_COVERAGE_TEXT = "No control or mitigation in this architecture addresses this risk"
-_BASIS_RAG = {BASIS_SUPPORTED: "green", BASIS_UNSUPPORTED: "amber", BASIS_IMPLIED: "amber", BASIS_GAP: "red"}
-_BASIS_ORDER = {BASIS_SUPPORTED: 0, BASIS_UNSUPPORTED: 1, BASIS_IMPLIED: 2, BASIS_GAP: 3}
+_BASIS_RAG = {BASIS_SUPPORTED: "green", BASIS_UNSUPPORTED: "amber", BASIS_IMPLIED: "amber",
+              BASIS_ADDITIONAL: "blue", BASIS_GAP: "red"}
+_BASIS_ORDER = {BASIS_SUPPORTED: 0, BASIS_UNSUPPORTED: 1, BASIS_IMPLIED: 2, BASIS_ADDITIONAL: 2, BASIS_GAP: 3}
 FINDINGS_HEADERS = [
     "#", "Severity", "Type", "Risk", "Mitigation", "Control", "Element(s)", "Explanation",
     "Recommended action", "Owner", "Action", "Due date", "Status",
@@ -90,6 +93,19 @@ def _status_rag(status: str) -> str:
     if "unsupported" in s or "not expected" in s:
         return "amber"
     return "green"
+
+
+def _row_height(texts_and_widths: Iterable[tuple[Any, float]], line_height: float = 15.0) -> float:
+    """Estimate a row height that shows all wrapped text (openpyxl cannot auto-fit rows).
+
+    Assumes ~1 character per unit of column width, with a small margin for proportional fonts.
+    """
+    lines = 1
+    for text, width in texts_and_widths:
+        chars_per_line = max(1.0, width * 0.95 - 1)
+        n = sum(max(1, math.ceil(len(part) / chars_per_line)) for part in str(text or "").split("\n"))
+        lines = max(lines, n)
+    return lines * line_height + 3
 
 
 def _paint(cell, rag: str) -> None:
@@ -191,6 +207,11 @@ def traceability_rows(arch: Architecture, cat: Catalogue, report: CoverageReport
                     requirement_url=req_urls, evidence_status=EVIDENCE_LABEL, basis=basis,
                 )
             )
+
+    # Implied rows for a risk that already has a claimed & AIGF-supported control are extra, not a concern.
+    supported = {row.risk_id for row in rows if row.basis == BASIS_SUPPORTED}
+    rows = [replace(row, basis=BASIS_ADDITIONAL) if row.basis == BASIS_IMPLIED and row.risk_id in supported else row
+            for row in rows]
 
     traced = {row.risk_id for row in rows}
     risk_rows = {row.risk_id: row for row in report.risks}
@@ -383,6 +404,9 @@ def _summary_sheet(ws: Worksheet, arch: Architecture, cat: Catalogue, report: Co
             c.alignment = _WRAP_TOP
         _link(ws.cell(row=r, column=1), (cat.risks.get(row.risk_id) or {}).get("url"))
         _paint(ws.cell(row=r, column=5), _status_rag(row.status))
+        ws.row_dimensions[r].height = _row_height(
+            (v, ws.column_dimensions[get_column_letter(col)].width) for col, v in enumerate(values, start=1)
+        )
         r += 1
 
     r += 1
@@ -393,6 +417,9 @@ def _summary_sheet(ws: Worksheet, arch: Architecture, cat: Catalogue, report: Co
         f"claims it but AIGF does not list the risk for that mitigation; '{BASIS_IMPLIED}' = AIGF says a mitigation "
         f"the control uses covers the risk, but the control does not claim it; '{BASIS_GAP}' = no control claims "
         f"the risk and no mitigation in use covers it (candidate AIGF mitigations are listed).",
+        f"'{BASIS_ADDITIONAL}' (light blue) = the risk is already covered by a claimed & AIGF-supported control; "
+        f"AIGF says another mitigation in use also covers it. This is extra context, not a finding. Amber "
+        f"'{BASIS_IMPLIED}' is used only for risks with no supported claim.",
         "Findings: errors fail the CI check (gaps, unknown IDs); warnings and info do not. Owner / Action / Due date / "
         "Status (shaded) are for the reviewer.",
         "Evidence Checklist: one row per declared control requirement. Evidence location / Reviewer / Date reviewed / "
@@ -405,7 +432,8 @@ def _summary_sheet(ws: Worksheet, arch: Architecture, cat: Catalogue, report: Co
         c = ws.cell(row=r, column=1, value=note)
         c.alignment = Alignment(wrap_text=True, vertical="top")
         ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=6)
-        ws.row_dimensions[r].height = 32
+        notes_width = sum(ws.column_dimensions[get_column_letter(col)].width for col in range(1, 7))
+        ws.row_dimensions[r].height = max(32, _row_height([(note, notes_width)]))
     _setup_print(ws, "Summary", landscape=False, header_row=None)
 
 

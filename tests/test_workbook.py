@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -12,12 +13,14 @@ from gac_workbook.calm import load_architecture
 from gac_workbook.cli import EXIT_OK, main
 from gac_workbook.coverage import compute_coverage
 from gac_workbook.workbook import (
+    BASIS_ADDITIONAL,
     CHECKLIST_HEADERS,
     FINDINGS_HEADERS,
     SHEETS,
     NO_COVERAGE_TEXT,
     SOURCES_HEADERS,
     TRACEABILITY_HEADERS,
+    _row_height,
     evidence_required,
     traceability_rows,
 )
@@ -109,6 +112,59 @@ def test_catalogue_implied_rows(fixtures: Path) -> None:
     implied = [(r.risk_id, r.mitigation_id, r.basis) for r in traceability_rows(arch, cat, report)
                if r.basis == "Not claimed – AIGF suggests may cover"]
     assert implied == [("ri-904", "mi-902", "Not claimed – AIGF suggests may cover")]
+
+
+def test_additional_coverage_for_covered_risk(fixtures: Path, tmp_path: Path) -> None:
+    # Make mi-902 (used by synthetic-review-loop, which does not claim ri-901) also mitigate ri-901.
+    # ri-901 is already claimed & supported via mi-901, so the mi-902 row is extra context, not amber.
+    doc = json.loads((fixtures / "mini-aigf.json").read_text(encoding="utf-8"))
+    for m in doc["mitigations"]:
+        if m["id"] == "mi-902":
+            m["mitigates"] = ["ri-901", "ri-904"]
+    aigf = tmp_path / "aigf.json"
+    aigf.write_text(json.dumps(doc), encoding="utf-8")
+    arch = load_architecture(fixtures / "mini.calm.json")
+    cat = load_snapshot(aigf)
+    report = compute_coverage(arch, cat, expected_risks=["ri-901", "ri-904"])
+    rows = traceability_rows(arch, cat, report)
+    by = {(r.risk_id, r.mitigation_id, r.control): r.basis for r in rows}
+    assert by[("ri-901", "mi-902", "synthetic-review-loop")] == BASIS_ADDITIONAL
+    assert by[("ri-901", "mi-901", "synthetic-leakage-guard")] == "Claimed & AIGF-supported"
+    # ri-904 has no supported claim, so it stays amber "Not claimed – AIGF suggests may cover".
+    assert by[("ri-904", "mi-902", "synthetic-review-loop")] == "Not claimed – AIGF suggests may cover"
+    # No new findings from additional coverage.
+    assert {f.finding_type for f in report.findings if f.risk_id == "ri-901"} == set()
+
+    out = tmp_path / "wb.xlsx"
+    assert main(["export", "--arch", str(fixtures / "mini.calm.json"), "--aigf", str(aigf), "--out", str(out),
+                 "--expected-risks", "ri-901,ri-904"]) == EXIT_OK
+    ws = load_workbook(out)["Traceability"]
+    h = _header(ws)
+    col = h.index("Coverage basis") + 1
+    cells = [ws.cell(row=i, column=col) for i in range(2, ws.max_row + 1)]
+    fills = {c.value: c.fill.fgColor.rgb[-6:] for c in cells}
+    assert fills[BASIS_ADDITIONAL] == "DDEBF7"  # neutral light blue
+    assert fills["Not claimed – AIGF suggests may cover"] == "FFEB9C"  # amber
+
+
+def test_summary_explains_additional_and_sizes_rows(fixtures: Path, tmp_path: Path) -> None:
+    out = tmp_path / "wb.xlsx"
+    main(["export", "--arch", str(fixtures / "mini.calm.json"), "--aigf", str(fixtures / "mini-aigf.json"),
+          "--out", str(out)])
+    ws = load_workbook(out)["Summary"]
+    texts = [str(ws.cell(row=r, column=1).value or "") for r in range(1, ws.max_row + 1)]
+    assert any(t.startswith(f"'{BASIS_ADDITIONAL}' (light blue)") for t in texts)
+    # Coverage-table rows get a height that fits the wrapped status text.
+    status_rows = [r for r in range(1, ws.max_row + 1) if str(ws.cell(row=r, column=5).value or "").startswith("GAP")]
+    assert status_rows
+    for r in status_rows:
+        assert ws.row_dimensions[r].height and ws.row_dimensions[r].height >= 30
+
+
+def test_row_height_estimate() -> None:
+    assert _row_height([("short", 22)]) == 18
+    # "GAP – not claimed (AIGF suggests mi-4 may cover)" is 49 chars: 3 lines in a 22-wide column.
+    assert _row_height([("GAP – not claimed (AIGF suggests mi-4 may cover)", 22)]) == 48
 
 
 def test_summary_sheet_status_and_facts(exported: Path) -> None:
