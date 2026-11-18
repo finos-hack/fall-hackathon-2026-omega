@@ -2,7 +2,7 @@
 
 **Hackathon Track:** 2 – Extend & Utilize FINOS Governance-as-Code
 
-[![governance-check](https://github.com/jiaxingxue/gac-evidence-workbook/actions/workflows/governance-check.yml/badge.svg)](https://github.com/jiaxingxue/gac-evidence-workbook/actions/workflows/governance-check.yml) Red is expected: the check finds 2 real AIGF coverage gaps (ri-17, ri-19) in the FINOS Steel Thread. See [Findings](#results-on-the-finos-steel-thread).
+[![governance-check](https://github.com/finos-hack/fall-hackathon-2026-omega/actions/workflows/governance-check.yml/badge.svg)](https://github.com/finos-hack/fall-hackathon-2026-omega/actions/workflows/governance-check.yml) Red is expected: the check finds 2 real AIGF coverage gaps (ri-17, ri-19) in the FINOS Steel Thread. See [Findings](#results-on-the-finos-steel-thread).
 
 A CLI that reads a FINOS CALM architecture, traces its controls to FINOS AI Governance Framework (AIGF) risks and mitigations, flags uncovered risks and inconsistent claims, and exports an auditor-ready Excel evidence workbook. A CI check fails when gaps exist.
 
@@ -48,8 +48,8 @@ Commands are for Git Bash on Windows, or bash on Linux and macOS. Requires Pytho
 **1. Create a virtual environment and install**
 
 ```bash
-git clone https://github.com/jiaxingxue/gac-evidence-workbook.git
-cd gac-evidence-workbook
+git clone https://github.com/finos-hack/fall-hackathon-2026-omega.git
+cd fall-hackathon-2026-omega
 python -m venv .venv
 source .venv/Scripts/activate   # Linux/macOS: source .venv/bin/activate
 pip install -e .

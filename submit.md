@@ -4,7 +4,9 @@
 
 - **Track:** Track 2 – Extend & Utilize FINOS Governance-as-Code
 
-- **Team:** solo – Jiaxing (Chris) Xue (@jiaxingxue); repo: https://github.com/jiaxingxue/gac-evidence-workbook
+- **Team:** solo – Jiaxing (Chris) Xue (@jiaxingxue); repo: https://github.com/finos-hack/fall-hackathon-2026-omega
+
+- **Repo history:** Developed in github.com/jiaxingxue/gac-evidence-workbook and moved to this official repo on Nov 18.
 
 - **Why FINOS should care:** Auditors and second-line risk teams need risk → control → evidence traceability in a form they can review and sign off, but Governance-as-Code lives in JSON. Run against the FINOS Steel Thread, the tool found real, actionable issues:
   - two UC-3 risks no control claims: ri-17 Lack of Explainability, and ri-19 Data Quality and Drift (which AIGF says the already-used mi-4 covers);

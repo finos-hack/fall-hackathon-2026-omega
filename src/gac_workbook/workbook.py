@@ -29,7 +29,7 @@ from .coverage import ERROR, INFO, WARNING, CoverageReport
 
 SHEETS = ["Summary", "Traceability", "Findings", "Evidence Checklist", "Sources"]
 EVIDENCE_LABEL = "Declared (not verified)"
-TOOL_REPO = "https://github.com/jiaxingxue/gac-evidence-workbook"
+TOOL_REPO = "https://github.com/finos-hack/fall-hackathon-2026-omega"
 
 TRACEABILITY_HEADERS = [
     "Risk ID", "Risk title", "Expected", "Coverage basis", "Control", "Mitigation ID", "Mitigation title",
