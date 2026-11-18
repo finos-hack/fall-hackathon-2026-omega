@@ -1,0 +1,98 @@
+name: governance-check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Pinned in docs/data-sources.md (checked by the "Verify pinned SHA" step below).
+  STEEL_THREAD_REPO: https://github.com/finos-hack/ai-steel-thread-demo.git
+  STEEL_THREAD_SHA: 2782173d47f5074f8767dbdf553fa9165ee1ccd8
+  CALM_CLI_VERSION: 1.73.0
+
+jobs:
+  tests:
+    name: tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      # Unit tests use only the synthetic fixtures; tests that need the Steel Thread
+      # or AIGF clones are skipped here (-rs lists them).
+      - name: pytest
+        run: pytest -rs
+
+  steel-thread-check:
+    # Expected to be red: it reports the real coverage gaps (ri-17, ri-19) in the Steel Thread.
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify pinned SHA matches docs/data-sources.md
+        run: grep -q "$STEEL_THREAD_SHA" docs/data-sources.md
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install CALM CLI and gac-workbook
+        run: |
+          npm install -g "@finos/calm-cli@${CALM_CLI_VERSION}"
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      # Cloned outside the workspace at the pinned commit; never committed to this repo.
+      - name: Clone Steel Thread at pinned commit
+        run: |
+          git clone --filter=blob:none "$STEEL_THREAD_REPO" "$RUNNER_TEMP/ai-steel-thread-demo"
+          git -C "$RUNNER_TEMP/ai-steel-thread-demo" checkout --detach "$STEEL_THREAD_SHA"
+          git -C "$RUNNER_TEMP/ai-steel-thread-demo" rev-parse HEAD
+
+      - name: calm validate
+        working-directory: ${{ runner.temp }}/ai-steel-thread-demo
+        run: calm validate -a architecture/loan-approval.calm.json -u architecture/url-to-local-file-mapping.json -f pretty
+
+      - name: gac-workbook export
+        run: >
+          gac-workbook export
+          --arch "$RUNNER_TEMP/ai-steel-thread-demo/architecture/loan-approval.calm.json"
+          --out out/evidence-workbook.xlsx
+
+      - name: gac-workbook check (fails the job on gaps)
+        run: gac-workbook check --arch "$RUNNER_TEMP/ai-steel-thread-demo/architecture/loan-approval.calm.json"
+
+      - name: Add summary to job page
+        if: always() && hashFiles('out/summary.md') != ''
+        run: cat out/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload evidence workbook
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-workbook
+          path: |
+            out/evidence-workbook.xlsx
+            out/summary.md
+          if-no-files-found: warn

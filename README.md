@@ -1,5 +1,7 @@
 # Governance-as-Code Evidence Workbook
 
+[![governance-check](https://github.com/jiaxingxue/gac-evidence-workbook/actions/workflows/governance-check.yml/badge.svg)](https://github.com/jiaxingxue/gac-evidence-workbook/actions/workflows/governance-check.yml)
+
 **Hackathon Track:** 2 – Extend & Utilize FINOS Governance-as-Code
 
 A CLI that reads a FINOS CALM architecture (from the Governance-as-Code Steel Thread), maps its controls to FINOS AI Governance Framework (AIGF) risks and mitigations, flags uncovered risks, and exports an auditor-ready Excel evidence workbook, with a CI check that fails when gaps exist.
@@ -20,6 +22,15 @@ Governance-as-Code expresses AI controls as JSON (CALM architectures and control
 - Provide a `check` command that exits non-zero when claims-based gaps exist, for use in CI.
 
 Design decisions and data provenance are recorded in [docs/decisions.md](docs/decisions.md) and [docs/data-sources.md](docs/data-sources.md).
+
+## Continuous integration
+
+The [governance-check](.github/workflows/governance-check.yml) workflow has two jobs:
+
+- **tests:** runs the unit tests on Python 3.10 and 3.13 using only the synthetic fixtures in `tests/fixtures/`.
+- **steel-thread-check:** clones the [Steel Thread](https://github.com/finos-hack/ai-steel-thread-demo) at the commit pinned in [docs/data-sources.md](docs/data-sources.md), runs `calm validate`, exports the evidence workbook, then runs `gac-workbook check`. The workbook and `summary.md` are uploaded as the `evidence-workbook` artifact even when the check fails.
+
+> **A red `steel-thread-check` is expected.** It means the tool is working: it found real coverage gaps in the Steel Thread architecture. AIGF use case UC-3 (Loan Approval) expects risks ri-17 (Lack of Explainability) and ri-19 (Data Quality and Drift), and no control in the architecture claims either one. The job turns green when those gaps are addressed upstream.
 
 ## Installation
 
