@@ -1,0 +1,116 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/calm.json",
+  "unique-id": "mini-synthetic-lending",
+  "name": "Mini synthetic lending app",
+  "description": "SYNTHETIC TEST FIXTURE written for gac-evidence-workbook unit tests. Not derived from the Steel Thread. IDs ri-90x / mi-90x / uc-901 are fake and exist only in tests/fixtures/mini-aigf.json.",
+  "metadata": [
+    {
+      "finos-use-case": "uc-901_synthetic-lending",
+      "aigf-mitigations": ["mi-901", "mi-902"],
+      "aigf-risks": ["ri-901"]
+    }
+  ],
+  "nodes": [
+    {
+      "unique-id": "applicant",
+      "node-type": "actor",
+      "name": "Applicant",
+      "description": "Person applying for a loan"
+    },
+    {
+      "unique-id": "lending-app",
+      "node-type": "service",
+      "name": "Lending App",
+      "description": "Collects applications and calls the scoring model",
+      "controls": {
+        "synthetic-leakage-guard": {
+          "description": "Well-supported claim: mi-901 covers ri-901, and the AIGF fixture agrees.",
+          "aigf-mitigations": ["mi-901"],
+          "aigf-risks": ["ri-901"],
+          "requirements": [
+            {
+              "requirement-url": "https://example.invalid/control-requirement/mi-901-leakage-guard",
+              "config": {
+                "control-id": "mi-901",
+                "name": "Synthetic leakage guard",
+                "scope": "outbound-prompts"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "scoring-model",
+      "node-type": "service",
+      "name": "Scoring Model",
+      "description": "Hosted model that scores applications",
+      "controls": {
+        "synthetic-review-loop": {
+          "description": "Unsupported claim: claims mi-902 covers ri-902, but the AIGF fixture says mi-902 mitigates only ri-904.",
+          "aigf-mitigations": ["mi-902"],
+          "aigf-risks": ["ri-902"],
+          "requirements": [
+            {
+              "requirement-url": "https://example.invalid/control-requirement/mi-902-review-loop",
+              "config": {
+                "control-id": "mi-902",
+                "name": "Synthetic review loop"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "application-store",
+      "node-type": "database",
+      "name": "Application Store",
+      "description": "Stores applications. No controls; ri-903 (expected) is claimed by nothing."
+    }
+  ],
+  "relationships": [
+    {
+      "unique-id": "lending-app-to-scoring-model",
+      "description": "Lending App sends applications to the Scoring Model",
+      "relationship-type": {
+        "connects": {
+          "source": { "node": "lending-app" },
+          "destination": { "node": "scoring-model" }
+        }
+      },
+      "protocol": "HTTPS",
+      "controls": {
+        "synthetic-leakage-guard": {
+          "description": "Same control as on lending-app, attached to the outbound edge.",
+          "aigf-mitigations": ["mi-901"],
+          "aigf-risks": ["ri-901"],
+          "requirements": [
+            {
+              "requirement-url": "https://example.invalid/control-requirement/mi-901-leakage-guard",
+              "config": {
+                "control-id": "mi-901",
+                "name": "Synthetic leakage guard",
+                "scope": "edge"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "flows": [
+    {
+      "unique-id": "score-application",
+      "name": "Score an application",
+      "description": "Applicant submits; the app asks the model for a score",
+      "transitions": [
+        {
+          "relationship-unique-id": "lending-app-to-scoring-model",
+          "sequence-number": 1,
+          "description": "Send application for scoring"
+        }
+      ]
+    }
+  ]
+}
