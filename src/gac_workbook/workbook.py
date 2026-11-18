@@ -31,9 +31,19 @@ EVIDENCE_LABEL = "Declared (not verified)"
 TOOL_REPO = "https://github.com/jiaxingxue/gac-evidence-workbook"
 
 TRACEABILITY_HEADERS = [
-    "Risk ID", "Risk title", "Expected", "Mitigation ID", "Mitigation title", "Control",
-    "Element type", "Element ID", "Element name", "Requirement URL", "Evidence status", "Coverage basis",
+    "Risk ID", "Risk title", "Expected", "Coverage basis", "Control", "Mitigation ID", "Mitigation title",
+    "Element type", "Element ID", "Element name", "Requirement URL", "Evidence status",
+    "Candidate AIGF mitigations",
 ]
+
+# Coverage basis labels (Traceability sheet).
+BASIS_SUPPORTED = "Claimed & AIGF-supported"
+BASIS_UNSUPPORTED = "Claimed – not in AIGF (unsupported)"
+BASIS_IMPLIED = "Not claimed – AIGF suggests may cover"
+BASIS_GAP = "GAP – nothing addresses this risk"
+NO_COVERAGE_TEXT = "No control or mitigation in this architecture addresses this risk"
+_BASIS_RAG = {BASIS_SUPPORTED: "green", BASIS_UNSUPPORTED: "amber", BASIS_IMPLIED: "amber", BASIS_GAP: "red"}
+_BASIS_ORDER = {BASIS_SUPPORTED: 0, BASIS_UNSUPPORTED: 1, BASIS_IMPLIED: 2, BASIS_GAP: 3}
 FINDINGS_HEADERS = [
     "#", "Severity", "Type", "Risk", "Mitigation", "Control", "Element(s)", "Explanation",
     "Recommended action", "Owner", "Action", "Due date", "Status",
@@ -136,6 +146,7 @@ class TraceRow:
     requirement_url: str
     evidence_status: str
     basis: str
+    candidates: str = ""
 
 
 def _num(aigf_id: str) -> int:
@@ -167,10 +178,10 @@ def traceability_rows(arch: Architecture, cat: Catalogue, report: CoverageReport
         for m in mis:
             mitigates = set((cat.mitigations.get(m) or {}).get("mitigates") or [])
             for r in claimed:
-                candidates[(r, m)] = "both" if r in mitigates else "claimed"
+                candidates[(r, m)] = BASIS_SUPPORTED if r in mitigates else BASIS_UNSUPPORTED
             # Catalogue-implied rows are limited to expected risks the control does not claim.
             for r in (mitigates & expected) - claimed:
-                candidates[(r, m)] = "catalogue-implied"
+                candidates[(r, m)] = BASIS_IMPLIED
         for (r, m), basis in candidates.items():
             rows.append(
                 TraceRow(
@@ -182,14 +193,20 @@ def traceability_rows(arch: Architecture, cat: Catalogue, report: CoverageReport
             )
 
     traced = {row.risk_id for row in rows}
+    risk_rows = {row.risk_id: row for row in report.risks}
     for r in report.expected_risks:
         if r not in traced:
+            cands = risk_rows[r].candidates if r in risk_rows else ()
             rows.append(
-                TraceRow(r, title(cat.risks, r), True, "", "", "", "", "", "", "", "None", "none (GAP)")
+                TraceRow(
+                    risk_id=r, risk_title=title(cat.risks, r), expected=True, mitigation_id="–",
+                    mitigation_title="–", control=NO_COVERAGE_TEXT, element_type="–", element_id="–",
+                    element_name="–", requirement_url="–", evidence_status="None", basis=BASIS_GAP,
+                    candidates="\n".join(cands) or "(AIGF lists no mitigation for this risk)",
+                )
             )
 
-    basis_order = {"both": 0, "claimed": 1, "catalogue-implied": 2, "none (GAP)": 3}
-    rows.sort(key=lambda t: (_num(t.risk_id), basis_order.get(t.basis, 9), _num(t.mitigation_id), t.control,
+    rows.sort(key=lambda t: (_num(t.risk_id), _BASIS_ORDER.get(t.basis, 9), _num(t.mitigation_id), t.control,
                              t.element_type, t.element_id))
     return rows
 
@@ -219,7 +236,7 @@ def evidence_required(config: dict[str, Any], limit: int = 900) -> str:
 # --- sheet helpers --------------------------------------------------------------------------------
 def _setup_print(ws: Worksheet, title: str, landscape: bool = True, header_row: int | None = 1) -> None:
     ws.page_setup.orientation = "landscape" if landscape else "portrait"
-    ws.page_setup.paperSize = ws.PAPERSIZE_A4
+    ws.page_setup.paperSize = ws.PAPERSIZE_LETTER
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     ws.page_setup.fitToWidth = 1
     ws.page_setup.fitToHeight = 0
@@ -371,9 +388,11 @@ def _summary_sheet(ws: Worksheet, arch: Architecture, cat: Catalogue, report: Co
     r += 1
     ws.cell(row=r, column=1, value="How to read this workbook").font = _SECTION_FONT
     notes = [
-        "Traceability: one row per risk, mitigation, control and architecture element. Coverage basis: 'claimed' = "
-        "the control names the risk; 'catalogue-implied' = AIGF says a mitigation the control uses covers the risk; "
-        "'both' = both agree; 'none (GAP)' = no control claims the risk.",
+        f"Traceability: one row per risk, control, mitigation and architecture element. Coverage basis: "
+        f"'{BASIS_SUPPORTED}' = the control claims the risk and AIGF agrees; '{BASIS_UNSUPPORTED}' = the control "
+        f"claims it but AIGF does not list the risk for that mitigation; '{BASIS_IMPLIED}' = AIGF says a mitigation "
+        f"the control uses covers the risk, but the control does not claim it; '{BASIS_GAP}' = no control claims "
+        f"the risk and no mitigation in use covers it (candidate AIGF mitigations are listed).",
         "Findings: errors fail the CI check (gaps, unknown IDs); warnings and info do not. Owner / Action / Due date / "
         "Status (shaded) are for the reviewer.",
         "Evidence Checklist: one row per declared control requirement. Evidence location / Reviewer / Date reviewed / "
@@ -394,18 +413,23 @@ def _traceability_sheet(ws: Worksheet, rows: list[TraceRow], cat: Catalogue) -> 
     h = TRACEABILITY_HEADERS
     _write_table(
         ws, h,
-        ([t.risk_id, t.risk_title, "yes" if t.expected else "no", t.mitigation_id, t.mitigation_title, t.control,
-          t.element_type, t.element_id, t.element_name, t.requirement_url, t.evidence_status, t.basis] for t in rows),
-        widths={"Risk ID": 9, "Risk title": 30, "Expected": 10, "Mitigation ID": 13, "Mitigation title": 30,
-                "Control": 28, "Element type": 13, "Element ID": 30, "Element name": 28, "Requirement URL": 44,
-                "Evidence status": 22, "Coverage basis": 18},
-        wrap={"Risk title", "Mitigation title", "Element name", "Requirement URL"},
+        ([t.risk_id, t.risk_title, "yes" if t.expected else "no", t.basis, t.control, t.mitigation_id,
+          t.mitigation_title, t.element_type, t.element_id, t.element_name, t.requirement_url, t.evidence_status,
+          t.candidates] for t in rows),
+        widths={"Risk ID": 9, "Risk title": 30, "Expected": 10, "Coverage basis": 24, "Control": 30,
+                "Mitigation ID": 13, "Mitigation title": 30, "Element type": 13, "Element ID": 30,
+                "Element name": 28, "Requirement URL": 44, "Evidence status": 22, "Candidate AIGF mitigations": 48},
+        wrap={"Risk title", "Coverage basis", "Control", "Mitigation title", "Element name", "Requirement URL",
+              "Candidate AIGF mitigations"},
     )
+    gap_fill = _RAG["red"][0]
     for i, t in enumerate(rows, start=2):
+        if t.basis == BASIS_GAP:
+            for col in range(1, len(h) + 1):
+                ws.cell(row=i, column=col).fill = gap_fill
         _link(ws.cell(row=i, column=_col(h, "Risk ID")), (cat.risks.get(t.risk_id) or {}).get("url"))
         _link(ws.cell(row=i, column=_col(h, "Mitigation ID")), (cat.mitigations.get(t.mitigation_id) or {}).get("url"))
-        basis = ws.cell(row=i, column=_col(h, "Coverage basis"))
-        _paint(basis, {"both": "green", "claimed": "amber", "catalogue-implied": "amber"}.get(t.basis, "red"))
+        _paint(ws.cell(row=i, column=_col(h, "Coverage basis")), _BASIS_RAG.get(t.basis, "red"))
     _setup_print(ws, "Traceability")
 
 

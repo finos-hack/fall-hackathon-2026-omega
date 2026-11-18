@@ -15,6 +15,7 @@ from gac_workbook.workbook import (
     CHECKLIST_HEADERS,
     FINDINGS_HEADERS,
     SHEETS,
+    NO_COVERAGE_TEXT,
     SOURCES_HEADERS,
     TRACEABILITY_HEADERS,
     evidence_required,
@@ -74,12 +75,31 @@ def test_traceability_basis(fixtures: Path) -> None:
     cat = load_snapshot(fixtures / "mini-aigf.json")
     rows = traceability_rows(arch, cat, compute_coverage(arch, cat))
     assert [(r.risk_id, r.mitigation_id, r.control, r.element_id, r.basis) for r in rows] == [
-        ("ri-901", "mi-901", "synthetic-leakage-guard", "lending-app", "both"),
-        ("ri-901", "mi-901", "synthetic-leakage-guard", "lending-app-to-scoring-model", "both"),
-        ("ri-902", "mi-902", "synthetic-review-loop", "scoring-model", "claimed"),
-        ("ri-903", "", "", "", "none (GAP)"),
+        ("ri-901", "mi-901", "synthetic-leakage-guard", "lending-app", "Claimed & AIGF-supported"),
+        ("ri-901", "mi-901", "synthetic-leakage-guard", "lending-app-to-scoring-model", "Claimed & AIGF-supported"),
+        ("ri-902", "mi-902", "synthetic-review-loop", "scoring-model", "Claimed – not in AIGF (unsupported)"),
+        ("ri-903", "–", NO_COVERAGE_TEXT, "–", "GAP – nothing addresses this risk"),
     ]
-    assert all(r.evidence_status == "Declared (not verified)" for r in rows if r.control)
+    assert all(r.evidence_status == "Declared (not verified)" for r in rows[:3])
+    gap = rows[3]
+    assert gap.evidence_status == "None"
+    assert gap.candidates == "mi-903 (Synthetic draft mitigation (unused)) [Draft]"
+    assert all(r.candidates == "" for r in rows[:3])
+
+
+def test_traceability_column_order_and_gap_row(exported: Path) -> None:
+    ws = load_workbook(exported)["Traceability"]
+    assert _header(ws) == [
+        "Risk ID", "Risk title", "Expected", "Coverage basis", "Control", "Mitigation ID", "Mitigation title",
+        "Element type", "Element ID", "Element name", "Requirement URL", "Evidence status",
+        "Candidate AIGF mitigations",
+    ]
+    h = _header(ws)
+    gap = next(r for r in _data_rows(ws) if r[h.index("Coverage basis")] == "GAP – nothing addresses this risk")
+    assert gap[h.index("Control")] == "No control or mitigation in this architecture addresses this risk"
+    assert gap[h.index("Candidate AIGF mitigations")].startswith("mi-903")
+    assert int(ws.page_setup.paperSize) == int(ws.PAPERSIZE_LETTER) == 1  # US Letter
+    assert ws.page_setup.orientation == "landscape"
 
 
 def test_catalogue_implied_rows(fixtures: Path) -> None:
@@ -87,8 +107,8 @@ def test_catalogue_implied_rows(fixtures: Path) -> None:
     cat = load_snapshot(fixtures / "mini-aigf.json")
     report = compute_coverage(arch, cat, expected_risks=["ri-901", "ri-904"])
     implied = [(r.risk_id, r.mitigation_id, r.basis) for r in traceability_rows(arch, cat, report)
-               if r.basis == "catalogue-implied"]
-    assert implied == [("ri-904", "mi-902", "catalogue-implied")]
+               if r.basis == "Not claimed – AIGF suggests may cover"]
+    assert implied == [("ri-904", "mi-902", "Not claimed – AIGF suggests may cover")]
 
 
 def test_summary_sheet_status_and_facts(exported: Path) -> None:
