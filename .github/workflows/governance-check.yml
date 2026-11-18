@@ -17,15 +17,15 @@ env:
 jobs:
   tests:
     name: tests (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -41,19 +41,19 @@ jobs:
 
   steel-thread-check:
     # Expected to be red: it reports the real coverage gaps (ri-17, ri-19) in the Steel Thread.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Verify pinned SHA matches docs/data-sources.md
         run: grep -q "$STEEL_THREAD_SHA" docs/data-sources.md
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -89,10 +89,11 @@ jobs:
 
       - name: Upload evidence workbook
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: evidence-workbook
           path: |
             out/evidence-workbook.xlsx
             out/summary.md
           if-no-files-found: warn
+          retention-days: 7

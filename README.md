@@ -1,6 +1,6 @@
 # Governance-as-Code Evidence Workbook
 
-[![governance-check](https://github.com/jiaxingxue/gac-evidence-workbook/actions/workflows/governance-check.yml/badge.svg)](https://github.com/jiaxingxue/gac-evidence-workbook/actions/workflows/governance-check.yml)
+[![governance-check](https://github.com/jiaxingxue/gac-evidence-workbook/actions/workflows/governance-check.yml/badge.svg)](https://github.com/jiaxingxue/gac-evidence-workbook/actions/workflows/governance-check.yml) Red is expected: the check finds 2 real AIGF coverage gaps (ri-17, ri-19) in the FINOS Steel Thread. See [Findings](#results-on-the-finos-steel-thread).
 
 **Hackathon Track:** 2 – Extend & Utilize FINOS Governance-as-Code
 
