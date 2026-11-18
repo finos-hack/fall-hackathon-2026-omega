@@ -94,7 +94,7 @@ def test_catalogue_implied_rows(fixtures: Path) -> None:
 def test_summary_sheet_status_and_facts(exported: Path) -> None:
     ws = load_workbook(exported)["Summary"]
     facts = {ws.cell(row=r, column=1).value: ws.cell(row=r, column=2).value for r in range(1, ws.max_row + 1)}
-    assert facts["Overall status"] == "FAIL"
+    assert facts["Coverage result"] == "GAPS FOUND (1 error, 1 warning)"
     assert facts["Expected risks"] == 3
     assert facts["Expected risks claimed by a control"] == 2
     assert facts["Claims-based gaps (errors)"] == 1
@@ -132,7 +132,7 @@ def test_sources_attribution(exported: Path) -> None:
 
 def test_summary_markdown_written(exported: Path) -> None:
     md = (exported.parent / "summary.md").read_text(encoding="utf-8")
-    assert "**Overall status: FAIL**" in md
+    assert "**Coverage result: GAPS FOUND (1 error, 1 warning)**" in md
     assert "| ri-903 |" in md
     assert "Recommended action" in md
 

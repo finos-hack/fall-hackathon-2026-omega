@@ -39,3 +39,15 @@ def test_coverage_matches_decisions(steel_thread_arch: Path) -> None:
     assert [f.risk_id for f in r.findings if f.finding_type == GAP] == ["ri-17", "ri-19"]
     assert not [f for f in r.findings if f.finding_type == UNKNOWN_ID]
     assert r.has_errors
+    assert r.result_label == "GAPS FOUND (2 errors, 2 warnings)"
+
+    status = {row.risk_id: row.status for row in r.risks}
+    assert status["ri-17"] == "GAP – no control or mitigation"
+    assert status["ri-19"] == "GAP – not claimed (AIGF suggests mi-4 may cover)"
+    assert all(status[x] == "Covered" for x in ("ri-1", "ri-4", "ri-6", "ri-14"))
+
+    # Candidate mitigations for ri-17 come from the snapshot (mi-13 is the only one listing it).
+    gap17 = next(f for f in r.findings if f.finding_type == GAP and f.risk_id == "ri-17")
+    assert gap17.recommended_action.endswith(
+        "Candidate AIGF mitigations: mi-13 (Providing Citations and Source Traceability for AI-Generated Information)."
+    )

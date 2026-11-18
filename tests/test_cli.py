@@ -21,7 +21,7 @@ def test_exit_1_when_errors(fixtures: Path, capsys) -> None:
     out = capsys.readouterr().out
     assert "Expected risks: ri-901, ri-902, ri-903" in out
     assert "[ERROR  ] GAP" in out
-    assert "Result: FAIL (1 error)" in out
+    assert "Coverage result: GAPS FOUND (1 error, 1 warning)" in out
 
 
 def test_exit_0_when_only_warnings(fixtures: Path, capsys) -> None:
@@ -29,7 +29,7 @@ def test_exit_0_when_only_warnings(fixtures: Path, capsys) -> None:
     assert main(_args(fixtures, "--expected-risks", "ri-901,ri-902")) == EXIT_OK
     out = capsys.readouterr().out
     assert "UNSUPPORTED CLAIM" in out
-    assert "Result: PASS (0 errors)" in out
+    assert "Coverage result: NO GAPS FOUND" in out
 
 
 def test_exit_2_on_missing_file(fixtures: Path, tmp_path: Path, capsys) -> None:
@@ -54,7 +54,7 @@ def test_json_format(fixtures: Path, capsys) -> None:
         "errors": 1,
         "warnings": 1,
         "info": 1,
-        "result": "FAIL",
+        "coverage_result": "GAPS FOUND (1 error, 1 warning)",
         "evidence": "declared (from the CALM architecture; not runtime-verified)",
     }
     assert data["claims_gaps"] == ["ri-903"]

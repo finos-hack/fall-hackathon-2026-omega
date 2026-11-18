@@ -43,7 +43,14 @@ def test_expected_claimed_and_implied_views(fixtures: Path, cat) -> None:
     assert r.expected_risks == ["ri-901", "ri-902", "ri-903"]
     assert r.expected_source == "AIGF use case uc-901_synthetic-lending related_risks"
     status = {row.risk_id: row.status for row in r.risks}
-    assert status == {"ri-901": "covered", "ri-902": "covered (unsupported claim only)", "ri-903": "GAP"}
+    assert status == {
+        "ri-901": "Covered",
+        "ri-902": "Covered – unsupported claim only",
+        "ri-903": "GAP – no control or mitigation",
+    }
+    rows = {row.risk_id: row for row in r.risks}
+    assert rows["ri-903"].candidates == ("mi-903 (Synthetic draft mitigation (unused)) [Draft]",)
+    assert rows["ri-901"].candidates == ()
     assert r.claims_gaps == ["ri-903"]
     assert r.catalogue_implied_gaps == ["ri-902", "ri-903"]
 
@@ -55,8 +62,10 @@ def test_gap_finding(fixtures: Path, cat) -> None:
     assert "no control" in gap.message and "ri-903 (Synthetic risk: unexplained decisions)" in gap.message
     assert gap.recommended_action == (
         "Add or identify a control that addresses ri-903 (Synthetic risk: unexplained decisions), "
-        "or document a risk-acceptance rationale."
+        "or document a risk-acceptance rationale. "
+        "Candidate AIGF mitigations: mi-903 (Synthetic draft mitigation (unused)) [Draft]."
     )
+    assert r.result_label == "GAPS FOUND (1 error, 1 warning)"
     assert r.has_errors
 
 
@@ -92,8 +101,10 @@ def test_possibly_covered_not_claimed_finding(fixtures: Path, cat) -> None:
     (f,) = _of(r, POSSIBLY_COVERED)
     assert (f.severity, f.risk_id, f.mitigation_id) == (WARNING, "ri-904", "mi-902")
     assert f.recommended_action == "Confirm and add ri-904 to that control's aigf-risks, or record why it does not apply."
-    assert [g.risk_id for g in _of(r, GAP)] == ["ri-904"]  # it is still a claims-based gap
-    assert {row.risk_id: row.status for row in r.risks}["ri-904"] == "GAP (possibly covered)"
+    (gap,) = _of(r, GAP)
+    assert gap.risk_id == "ri-904"  # it is still a claims-based gap
+    assert "Candidate AIGF mitigations" not in gap.recommended_action  # a used mitigation already lists it
+    assert {row.risk_id: row.status for row in r.risks}["ri-904"] == "GAP – not claimed (AIGF suggests mi-902 may cover)"
 
 
 def test_unknown_id_in_control(arch_doc: dict, cat) -> None:
@@ -148,6 +159,7 @@ def test_no_use_case_and_no_override_is_an_input_error(arch_doc: dict, cat) -> N
     # With an override it works.
     r = compute_coverage(parse_architecture(doc), cat, expected_risks=["ri-901"])
     assert not r.has_errors
+    assert r.result_label == "NO GAPS FOUND"
 
 
 def test_findings_are_ordered_by_severity(fixtures: Path, cat) -> None:

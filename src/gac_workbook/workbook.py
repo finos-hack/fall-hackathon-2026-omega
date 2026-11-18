@@ -75,7 +75,7 @@ _SEVERITY_RAG = {ERROR: "red", WARNING: "amber", INFO: "blue"}
 
 def _status_rag(status: str) -> str:
     s = status.lower()
-    if s.startswith("gap") or s.startswith("unknown") or s == "fail":
+    if s.startswith("gap") or s.startswith("unknown"):
         return "red"
     if "unsupported" in s or "not expected" in s:
         return "amber"
@@ -299,11 +299,10 @@ def _summary_sheet(ws: Worksheet, arch: Architecture, cat: Catalogue, report: Co
     expected = report.expected_risks
     claimed_expected = [r.risk_id for r in report.risks if r.expected and r.claimed_by]
     uc = report.use_case
-    status = "FAIL" if report.has_errors else "PASS"
     aigf = report.aigf_source
 
     facts: list[tuple[str, Any]] = [
-        ("Overall status", status),
+        ("Coverage result", report.result_label),
         ("Architecture", arch.name or arch.unique_id or ""),
         ("Architecture file", prov.get("file")),
         ("Architecture ID", arch.unique_id or ""),
@@ -338,9 +337,10 @@ def _summary_sheet(ws: Worksheet, arch: Architecture, cat: Catalogue, report: Co
         a.border = b.border = _BORDER
         a.alignment = _TOP
         b.alignment = Alignment(wrap_text=True, vertical="top", horizontal="left")
-        if label == "Overall status":
-            _paint(b, "red" if status == "FAIL" else "green")
-            b.font = Font(bold=True, size=12, color=_RAG["red" if status == "FAIL" else "green"][1].color)
+        if label == "Coverage result":
+            rag = "red" if report.has_errors else "green"
+            _paint(b, rag)
+            b.font = Font(bold=True, size=12, color=_RAG[rag][1].color)
         if label in ("Claims-based gaps (errors)", "Findings: errors") and value:
             _paint(b, "red")
         if label == "Findings: warnings" and value:
@@ -382,7 +382,7 @@ def _summary_sheet(ws: Worksheet, arch: Architecture, cat: Catalogue, report: Co
         "(docs/decisions.md, D5).",
     ]
     for note in notes:
-        r += 1
+        r += 2  # blank line before each paragraph
         c = ws.cell(row=r, column=1, value=note)
         c.alignment = Alignment(wrap_text=True, vertical="top")
         ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=6)
@@ -510,14 +510,14 @@ def _md_escape(text: str) -> str:
 
 def summary_markdown(arch: Architecture, report: CoverageReport, *, generated_at: str,
                      provenance: dict[str, Any]) -> str:
-    status = "FAIL" if report.has_errors else "PASS"
     uc = report.use_case
     aigf = report.aigf_source
     lines = [
         "# Governance-as-Code evidence summary",
         "",
-        f"**Overall status: {status}** ({report.count(ERROR)} error, {report.count(WARNING)} warning, "
-        f"{report.count(INFO)} info)",
+        f"**Coverage result: {report.result_label}**",
+        "",
+        f"Findings: {report.count(ERROR)} error, {report.count(WARNING)} warning, {report.count(INFO)} info.",
         "",
         f"- Architecture: {arch.name or arch.unique_id} (`{provenance.get('file')}`)",
         f"- AIGF use case: {uc['id'] + ' - ' + str(uc.get('title')) + (' [Draft]' if uc.get('draft') else '') if uc else '(none)'}",

@@ -41,8 +41,34 @@ ACTION_UNKNOWN_ID = "Correct the ID or update the AIGF snapshot."
 ACTION_DRAFT_REFERENCE = "Re-run the check when the AIGF item leaves Draft."
 
 
-def action_gap(risk_label: str) -> str:
-    return f"Add or identify a control that addresses {risk_label}, or document a risk-acceptance rationale."
+def action_gap(risk_label: str, candidates: Iterable[str] = ()) -> str:
+    text = f"Add or identify a control that addresses {risk_label}, or document a risk-acceptance rationale."
+    candidates = list(candidates)
+    if candidates:
+        text += f" Candidate AIGF mitigations: {'; '.join(candidates)}."
+    return text
+
+
+# Risk status labels (shared by the text output, Summary sheet and summary.md).
+STATUS_COVERED = "Covered"
+STATUS_COVERED_UNSUPPORTED = "Covered – unsupported claim only"
+STATUS_GAP_NOTHING = "GAP – no control or mitigation"
+STATUS_NOT_EXPECTED = "Claimed (not expected)"
+STATUS_UNKNOWN = "UNKNOWN ID"
+
+
+def status_gap_possibly(mitigations: Iterable[str]) -> str:
+    return f"GAP – not claimed (AIGF suggests {', '.join(mitigations)} may cover)"
+
+
+def candidate_mitigations(cat: Catalogue, risk_id: str) -> list[str]:
+    """Every AIGF mitigation whose `mitigates` list includes the risk, as 'mi-N (Title)'."""
+    out = []
+    for mid in sorted(cat.mitigations, key=lambda i: _num(i)):
+        m = cat.mitigations[mid]
+        if risk_id in (m.get("mitigates") or []):
+            out.append(f"{mid} ({m.get('title')}){' [Draft]' if m.get('draft') else ''}")
+    return out
 
 
 def action_possibly_covered(risk_id: str) -> str:
@@ -81,6 +107,8 @@ class RiskRow:
     claimed_by: tuple[str, ...]  # control keys
     implied_by: tuple[str, ...]  # mitigation IDs whose AIGF `mitigates` lists the risk
     status: str
+    # For risks nothing addresses: every AIGF mitigation that lists the risk, as "mi-N (Title)".
+    candidates: tuple[str, ...] = ()
 
 
 @dataclass
@@ -106,13 +134,21 @@ class CoverageReport:
     def has_errors(self) -> bool:
         return self.count(ERROR) > 0
 
+    @property
+    def result_label(self) -> str:
+        """'GAPS FOUND (n errors, n warnings)' or 'NO GAPS FOUND'. Shared by all outputs."""
+        if not self.has_errors:
+            return "NO GAPS FOUND"
+        e, w = self.count(ERROR), self.count(WARNING)
+        return f"GAPS FOUND ({e} error{'s' if e != 1 else ''}, {w} warning{'s' if w != 1 else ''})"
+
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["summary"] = {
             "errors": self.count(ERROR),
             "warnings": self.count(WARNING),
             "info": self.count(INFO),
-            "result": "FAIL" if self.has_errors else "PASS",
+            "coverage_result": self.result_label,
             "evidence": "declared (from the CALM architecture; not runtime-verified)",
         }
         return d
@@ -312,6 +348,8 @@ def compute_coverage(
 
     for r in claims_gaps:
         uc_label = f"use case {use_case['id']}" if use_case and expected_risks is None else "this architecture"
+        # Candidates are listed only when nothing in the architecture addresses the risk at all.
+        candidates = candidate_mitigations(cat, r) if r not in implied else []
         findings.append(
             Finding(
                 GAP,
@@ -319,7 +357,7 @@ def compute_coverage(
                 f"{_title(cat, r)} is expected for {uc_label}, but no control in the architecture claims to "
                 f"address it.",
                 risk_id=r,
-                recommended_action=action_gap(_title(cat, r)),
+                recommended_action=action_gap(_title(cat, r), candidates),
             )
         )
         if r in implied:
@@ -343,10 +381,11 @@ def compute_coverage(
         is_expected = r in expected
         claimers = tuple(claimed.get(r, []))
         impliers = tuple(implied.get(r, []))
+        candidates: tuple[str, ...] = ()
         if r not in cat.risks:
-            status = "UNKNOWN ID"
+            status = STATUS_UNKNOWN
         elif not is_expected:
-            status = "claimed (not expected)"
+            status = STATUS_NOT_EXPECTED
         elif claimers:
             supported = any(
                 r in (cat.mitigations.get(m, {}).get("mitigates") or [])
@@ -354,12 +393,15 @@ def compute_coverage(
                 if c.control_key in claimers
                 for m in c.mitigations
             )
-            status = "covered" if supported else "covered (unsupported claim only)"
+            status = STATUS_COVERED if supported else STATUS_COVERED_UNSUPPORTED
         elif impliers:
-            status = "GAP (possibly covered)"
+            status = status_gap_possibly(impliers)
         else:
-            status = "GAP"
-        rows.append(RiskRow(r, (cat.risks.get(r) or {}).get("title"), is_expected, claimers, impliers, status))
+            status = STATUS_GAP_NOTHING
+            candidates = tuple(candidate_mitigations(cat, r))
+        rows.append(
+            RiskRow(r, (cat.risks.get(r) or {}).get("title"), is_expected, claimers, impliers, status, candidates)
+        )
 
     findings.sort(key=lambda f: (SEVERITY_ORDER[f.severity], f.finding_type, _num(f.risk_id or f.mitigation_id or "zz-0")))
 

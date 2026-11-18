@@ -92,7 +92,7 @@ def render_text(report: CoverageReport) -> str:
         out.append(f"  [{f.severity.upper():7}] {f.finding_type:<29} {subject:<7} {f.message}")
         out.append(f"  {'':9} {'':29} {'':7} Recommended action: {f.recommended_action}")
     out.append("")
-    out.append(f"Result: {'FAIL' if report.has_errors else 'PASS'} ({e} error{'s' if e != 1 else ''})")
+    out.append(f"Coverage result: {report.result_label}")
     return "\n".join(out)
 
 
@@ -129,13 +129,9 @@ def _cmd_export(args: argparse.Namespace) -> int:
     except _INPUT_ERRORS as exc:
         print(f"gac-workbook export: error: {exc}", file=sys.stderr)
         return EXIT_USAGE
-    status = "FAIL" if report.has_errors else "PASS"
     print(f"Wrote {xlsx}")
     print(f"Wrote {md}")
-    print(
-        f"Status: {status} ({report.count(ERROR)} error, {report.count(WARNING)} warning, {report.count(INFO)} info). "
-        "Export always exits 0 on success; use `check` to gate CI."
-    )
+    print(f"Coverage result: {report.result_label}. Export always exits 0 on success; use `check` to gate CI.")
     return EXIT_OK
 
 
