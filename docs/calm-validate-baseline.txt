@@ -1,0 +1,15 @@
+# CALM validation baseline for the Governance-as-Code Steel Thread architecture
+# Source: https://github.com/finos-hack/ai-steel-thread-demo @ 2782173d47f5074f8767dbdf553fa9165ee1ccd8
+# CALM CLI: @finos/calm-cli 1.73.0  |  Node v24.19.0  |  run 2026-11-18T08:38Z
+# Command (run from the steel-thread repo root, as documented in its README):
+#   calm validate -a architecture/loan-approval.calm.json -u architecture/url-to-local-file-mapping.json -f pretty
+# Output below is verbatim except ANSI colour codes stripped.
+
+info [file-system-document-loader]:     C:\Xue\A_Xue_Workspace\Hackathon\FINOS_Fall_2026_Hackathon\sources\ai-steel-thread-demo\architecture\loan-approval.calm.json exists, loading as file...
+Summary
+- Errors: no (0)
+- Warnings: no (0)
+- Info/Hints: 0
+
+No issues found.
+# exit code: 0
