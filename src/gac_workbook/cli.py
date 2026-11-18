@@ -1,6 +1,7 @@
 """Command-line interface: `gac-workbook check` and `gac-workbook export`.
 
-Exit codes: 0 = no errors, 1 = errors found (gaps or unknown IDs), 2 = usage or input error.
+Exit codes for `check`: 0 = pass, 1 = findings at or above --fail-on (default: error, i.e. gaps or
+unknown IDs), 2 = usage or input error. `export` exits 0 on success regardless of findings.
 """
 
 from __future__ import annotations
@@ -113,11 +114,24 @@ def _cmd_check(args: argparse.Namespace) -> int:
         print(f"gac-workbook check: error: {exc}", file=sys.stderr)
         return EXIT_USAGE
 
+    code = exit_code_for(report, args.fail_on)
     if args.format == "json":
-        print(json.dumps(report.to_dict(), indent=2, ensure_ascii=False))
+        data = report.to_dict()
+        data["check"] = {"fail_on": args.fail_on, "exit_code": code}
+        print(json.dumps(data, indent=2, ensure_ascii=False))
     else:
         print(render_text(report))
-    return EXIT_FINDINGS if report.has_errors else EXIT_OK
+        print(f"Exit policy    : --fail-on {args.fail_on} -> exit {code}")
+    return code
+
+
+def exit_code_for(report: CoverageReport, fail_on: str) -> int:
+    """--fail-on error (default): exit 1 on errors; warning: on errors or warnings; none: never."""
+    if fail_on == "none":
+        return EXIT_OK
+    if report.count(ERROR) or (fail_on == "warning" and report.count(WARNING)):
+        return EXIT_FINDINGS
+    return EXIT_OK
 
 
 def _cmd_export(args: argparse.Namespace) -> int:
@@ -157,6 +171,12 @@ def build_parser() -> argparse.ArgumentParser:
     check = sub.add_parser("check", help="report coverage findings; exit 1 if there are errors")
     _add_input_args(check)
     check.add_argument("--format", choices=["text", "json"], default="text")
+    check.add_argument(
+        "--fail-on",
+        choices=["error", "warning", "none"],
+        default="error",
+        help="exit 1 on errors (default), on errors or warnings, or never",
+    )
     check.set_defaults(func=_cmd_check)
 
     exp = sub.add_parser("export", help="write the Excel evidence workbook and a Markdown summary")

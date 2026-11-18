@@ -50,6 +50,7 @@ This project was built during a time-boxed FINOS hackathon. List below what you 
 
 1. Expand the CALM control → AIGF mapping beyond the Steel Thread example architecture.
 2. Link workbook rows to live evidence sources (CI runs, test reports) instead of static references.
+3. Risk-acceptance / waiver file so accepted risks don't fail CI.
 
 ## Contributing
 

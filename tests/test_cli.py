@@ -32,6 +32,33 @@ def test_exit_0_when_only_warnings(fixtures: Path, capsys) -> None:
     assert "Coverage result: NO GAPS FOUND" in out
 
 
+def test_fail_on_policies(fixtures: Path, capsys) -> None:
+    # Fixture default: 1 error (GAP), 1 warning (UNSUPPORTED CLAIM).
+    assert main(_args(fixtures, "--fail-on", "error")) == EXIT_FINDINGS
+    assert main(_args(fixtures, "--fail-on", "warning")) == EXIT_FINDINGS
+    assert main(_args(fixtures, "--fail-on", "none")) == EXIT_OK
+    # No errors, 1 warning.
+    only_warn = ("--expected-risks", "ri-901,ri-902")
+    assert main(_args(fixtures, *only_warn, "--fail-on", "error")) == EXIT_OK
+    assert main(_args(fixtures, *only_warn, "--fail-on", "warning")) == EXIT_FINDINGS
+    assert main(_args(fixtures, *only_warn, "--fail-on", "none")) == EXIT_OK
+    out = capsys.readouterr().out
+    assert "Exit policy    : --fail-on warning -> exit 1" in out
+
+
+def test_fail_on_in_json(fixtures: Path, capsys) -> None:
+    main(_args(fixtures, "--format", "json", "--fail-on", "none"))
+    assert json.loads(capsys.readouterr().out)["check"] == {"fail_on": "none", "exit_code": 0}
+
+
+def test_fail_on_rejects_unknown_value(fixtures: Path) -> None:
+    import pytest
+
+    with pytest.raises(SystemExit) as exc:
+        main(_args(fixtures, "--fail-on", "info"))
+    assert exc.value.code == EXIT_USAGE
+
+
 def test_exit_2_on_missing_file(fixtures: Path, tmp_path: Path, capsys) -> None:
     code = main(["check", "--arch", str(tmp_path / "missing.json"), "--aigf", str(fixtures / "mini-aigf.json")])
     assert code == EXIT_USAGE
