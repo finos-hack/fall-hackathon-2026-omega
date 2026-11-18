@@ -21,14 +21,19 @@ AIGF_ATTRIBUTION = "© FINOS, CC-BY-4.0"
 CATALOGUE_SITE = "https://air-governance-framework.finos.org"
 
 # Catalogue page URLs follow the Jekyll config in the AIGF repo (docs/_config.yml):
-# risks and mitigations use Jekyll's default collection permalink /:collection/:path.html,
-# use cases set `permalink: /usecase/:name/`. The mitigation pattern matches the
-# `aigf-catalog-url` values used in the Steel Thread architecture.
+# risks and mitigations use Jekyll's default collection permalink /:collection/:path.html
+# (the file stem is kept as is); use cases set `permalink: /usecase/:name/`, and Jekyll
+# slugifies :name, so "uc-3_loan-approval" is served at /usecase/uc-3-loan-approval/.
+# All three patterns were checked against the live site on 2026-11-18 (HTTP 200).
+def _jekyll_slug(stem: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", stem.lower()).strip("-")
+
+
 COLLECTIONS = {
     # kind: (directory, filename prefix, URL builder)
     "risk": ("_risks", "ri", lambda stem: f"{CATALOGUE_SITE}/risks/{stem}.html"),
     "mitigation": ("_mitigations", "mi", lambda stem: f"{CATALOGUE_SITE}/mitigations/{stem}.html"),
-    "use_case": ("_usecases", "uc", lambda stem: f"{CATALOGUE_SITE}/usecase/{stem}/"),
+    "use_case": ("_usecases", "uc", lambda stem: f"{CATALOGUE_SITE}/usecase/{_jekyll_slug(stem)}/"),
 }
 
 DRAFT_STATUS = "Draft"

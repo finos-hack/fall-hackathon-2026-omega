@@ -77,7 +77,8 @@ def test_build_snapshot_tiny_tree(tiny_aigf: Path) -> None:
     assert uc["short_id"] == "uc-1"
     assert uc["title"] == "Tiny Case"
     assert uc["related_risks"] == ["ri-1", "ri-10"]
-    assert uc["url"] == "https://air-governance-framework.finos.org/usecase/uc-1_tiny-case/"
+    # Jekyll slugifies :name for the usecase permalink (underscore -> dash).
+    assert uc["url"] == "https://air-governance-framework.finos.org/usecase/uc-1-tiny-case/"
     assert uc["draft"] is True
 
     notes = "\n".join(snap["parse_notes"])

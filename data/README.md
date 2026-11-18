@@ -7,7 +7,7 @@ A generated, minimal snapshot of the [FINOS AI Governance Framework](https://git
 - **Source:** `finos/ai-governance-framework` at commit [`67b8c3257695d5ede09d262798bf28a0e58d4740`](https://github.com/finos/ai-governance-framework/tree/67b8c3257695d5ede09d262798bf28a0e58d4740). The commit is also recorded inside the file (`source.commit`).
 - **Contents:** identifiers, titles, `doc-status` (with a `draft` flag), catalogue page URLs, each mitigation's `mitigates` list, and each use case's `related_risks`. **No body text** is copied.
 - **Parse notes:** anything unusual found while parsing is listed in `parse_notes`. At this commit, `ri-2` and `ri-17` declare `related_risks` twice (first empty, then populated); the generator merges the lists and records a note.
-- **Catalogue URLs** are derived from the AIGF site config (`docs/CNAME`, `docs/_config.yml`).
+- **Catalogue URLs** are derived from the AIGF site config (`docs/CNAME`, `docs/_config.yml`): `/risks/<file-stem>.html`, `/mitigations/<file-stem>.html` and `/usecase/<slugified-stem>/` (for example `/usecase/uc-3-loan-approval/`). Sample URLs for each kind returned HTTP 200 on 2026-11-18.
 
 Do not edit the file by hand.
 

@@ -6,7 +6,7 @@
     "attribution": "© FINOS, CC-BY-4.0",
     "catalogue_site": "https://air-governance-framework.finos.org/"
   },
-  "generated_at": "2026-11-18T17:07:14Z",
+  "generated_at": "2026-11-18T17:35:49Z",
   "generator": "scripts/build_aigf_snapshot.py",
   "content_note": "IDs, titles, status, links and catalogue URLs only; no body text.",
   "parse_notes": [
@@ -560,7 +560,7 @@
       "title": "Credit Risk Analysis",
       "doc_status": "Draft",
       "draft": true,
-      "url": "https://air-governance-framework.finos.org/usecase/uc-1_credit-risk-analysis/",
+      "url": "https://air-governance-framework.finos.org/usecase/uc-1-credit-risk-analysis/",
       "source_file": "docs/_usecases/uc-1_credit-risk-analysis.md",
       "short_id": "uc-1",
       "related_risks": [
@@ -575,7 +575,7 @@
       "title": "Autonomous Wealth Management",
       "doc_status": "Draft",
       "draft": true,
-      "url": "https://air-governance-framework.finos.org/usecase/uc-2_autonomous-wealth-management/",
+      "url": "https://air-governance-framework.finos.org/usecase/uc-2-autonomous-wealth-management/",
       "source_file": "docs/_usecases/uc-2_autonomous-wealth-management.md",
       "short_id": "uc-2",
       "related_risks": [
@@ -592,7 +592,7 @@
       "title": "Loan Approval",
       "doc_status": "Draft",
       "draft": true,
-      "url": "https://air-governance-framework.finos.org/usecase/uc-3_loan-approval/",
+      "url": "https://air-governance-framework.finos.org/usecase/uc-3-loan-approval/",
       "source_file": "docs/_usecases/uc-3_loan-approval.md",
       "short_id": "uc-3",
       "related_risks": [
@@ -609,7 +609,7 @@
       "title": "Anti-Financial Crime Investigation",
       "doc_status": "Draft",
       "draft": true,
-      "url": "https://air-governance-framework.finos.org/usecase/uc-4_anti-financial-crime-investigation/",
+      "url": "https://air-governance-framework.finos.org/usecase/uc-4-anti-financial-crime-investigation/",
       "source_file": "docs/_usecases/uc-4_anti-financial-crime-investigation.md",
       "short_id": "uc-4",
       "related_risks": [
