@@ -129,12 +129,15 @@ Exit policy    : --fail-on error -> exit 1
 ## Screenshots
 
 **1. Summary sheet:** coverage result, key facts and expected-risk coverage for the FINOS Steel Thread.
+
 ![Workbook summary](docs/img/workbook-summary.png)
 
 **2. Traceability sheet:** ri-17 has no control or mitigation (red); ri-19 is not claimed, though AIGF suggests mi-4 may cover it (amber).
+
 ![Workbook traceability](docs/img/workbook-traceability.png)
 
 **3. GitHub Actions job summary:** the CI run shows the same result, findings and recommended actions; the red check is expected.
+
 ![Actions summary](docs/img/actions-summary.png)
 
 ## Continuous integration
