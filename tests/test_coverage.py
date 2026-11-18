@@ -53,7 +53,19 @@ def test_gap_finding(fixtures: Path, cat) -> None:
     (gap,) = _of(r, GAP)
     assert (gap.severity, gap.risk_id) == (ERROR, "ri-903")
     assert "no control" in gap.message and "ri-903 (Synthetic risk: unexplained decisions)" in gap.message
+    assert gap.recommended_action == (
+        "Add or identify a control that addresses ri-903 (Synthetic risk: unexplained decisions), "
+        "or document a risk-acceptance rationale."
+    )
     assert r.has_errors
+
+
+def test_every_finding_has_a_recommended_action(arch_doc: dict, cat) -> None:
+    doc = copy.deepcopy(arch_doc)
+    doc["nodes"][2]["controls"]["synthetic-review-loop"]["aigf-mitigations"] = ["mi-902", "mi-903", "mi-999"]
+    r = compute_coverage(parse_architecture(doc), cat, expected_risks=["ri-901", "ri-902", "ri-903", "ri-904"])
+    assert {f.finding_type for f in r.findings} == {GAP, UNSUPPORTED_CLAIM, POSSIBLY_COVERED, UNKNOWN_ID, DRAFT_REFERENCE}
+    assert all(f.recommended_action for f in r.findings)
 
 
 def test_unsupported_claim_finding(fixtures: Path, cat) -> None:
@@ -66,6 +78,10 @@ def test_unsupported_claim_finding(fixtures: Path, cat) -> None:
         "ri-902",
     )
     assert f.elements == ("node:scoring-model",)
+    assert f.recommended_action == (
+        "Confirm the rationale for this mapping with the control owner, or remove the claim. "
+        "The AIGF catalogue doesn't list this risk for this mitigation."
+    )
     # The well-supported claim (mi-901 -> ri-901) produces no finding.
     assert not [x for x in r.findings if x.control_key == "synthetic-leakage-guard"]
 
@@ -75,6 +91,7 @@ def test_possibly_covered_not_claimed_finding(fixtures: Path, cat) -> None:
     r = compute_coverage(load_architecture(fixtures / "mini.calm.json"), cat, expected_risks=["ri-901", "ri-904"])
     (f,) = _of(r, POSSIBLY_COVERED)
     assert (f.severity, f.risk_id, f.mitigation_id) == (WARNING, "ri-904", "mi-902")
+    assert f.recommended_action == "Confirm and add ri-904 to that control's aigf-risks, or record why it does not apply."
     assert [g.risk_id for g in _of(r, GAP)] == ["ri-904"]  # it is still a claims-based gap
     assert {row.risk_id: row.status for row in r.risks}["ri-904"] == "GAP (possibly covered)"
 
@@ -88,6 +105,7 @@ def test_unknown_id_in_control(arch_doc: dict, cat) -> None:
     unknown = {f.mitigation_id or f.risk_id for f in _of(r, UNKNOWN_ID)}
     assert unknown == {"mi-999", "ri-998"}
     assert all(f.severity == ERROR for f in _of(r, UNKNOWN_ID))
+    assert all(f.recommended_action == "Correct the ID or update the AIGF snapshot." for f in _of(r, UNKNOWN_ID))
 
 
 def test_unknown_id_in_override_and_use_case(arch_doc: dict, fixtures: Path, cat) -> None:
@@ -109,6 +127,7 @@ def test_draft_reference_use_case(fixtures: Path, cat) -> None:
     assert len(drafts) == 1
     assert drafts[0].severity == INFO
     assert "uc-901_synthetic-lending" in drafts[0].message and "Draft" in drafts[0].message
+    assert drafts[0].recommended_action == "Re-run the check when the AIGF item leaves Draft."
 
 
 def test_draft_reference_control(arch_doc: dict, cat) -> None:

@@ -89,6 +89,7 @@ def render_text(report: CoverageReport) -> str:
     for f in report.findings:
         subject = f.risk_id or f.mitigation_id or "-"
         out.append(f"  [{f.severity.upper():7}] {f.finding_type:<29} {subject:<7} {f.message}")
+        out.append(f"  {'':9} {'':29} {'':7} Recommended action: {f.recommended_action}")
     out.append("")
     out.append(f"Result: {'FAIL' if report.has_errors else 'PASS'} ({e} error{'s' if e != 1 else ''})")
     return "\n".join(out)
@@ -132,10 +133,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    # Never crash on a console that can't encode a character (e.g. the © in the attribution).
+    # Always write UTF-8 (Windows pipes otherwise default to the ANSI code page, which
+    # garbles the © in the attribution and other non-ASCII titles).
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
-            stream.reconfigure(errors="replace")
+            stream.reconfigure(encoding="utf-8", errors="replace")
     args = build_parser().parse_args(argv)
     if getattr(args, "aigf", "unset") is None:
         args.aigf = _default_snapshot()

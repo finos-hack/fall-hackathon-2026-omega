@@ -32,6 +32,15 @@ Decisions made on 2026-11-18, following the data-sourcing findings in [data-sour
 
 `check` exits non-zero only when claims-based gaps exist. Warnings are printed and written to the workbook but don't change the exit code.
 
+Update (Task B, implemented): unknown IDs (an ID that isn't in the AIGF snapshot) are also errors, so `check` exits 1 when there are claims-based gaps **or** unknown IDs. It exits 2 on input errors, such as a missing file, or an architecture with no use case when `--expected-risks` isn't given. Draft AIGF items, including uc-3 (every use case is Draft at the pinned commit), are reported as info.
+
+## D5. Coverage status rules (reviewed and approved 2026-11-18)
+
+- **Support rule ("any mitigation in the control"):** a control's claim that it addresses risk *r* is **supported** when *any* of the AIGF mitigations listed in that control's `aigf-mitigations` has *r* in its AIGF `mitigates` list. Otherwise it is an UNSUPPORTED CLAIM (warning). Every Steel Thread control lists exactly one mitigation, so the rule makes no difference there today.
+- **Risk status "covered":** an expected risk is **covered** when at least one control claims it *and* at least one of those claims is supported. It is **covered (unsupported claim only)** when it is claimed but no claim is supported. For example, ri-1 is claimed by three controls; the mi-11 claim is unsupported, but mi-1 and mi-4 support it, so ri-1 is "covered" and the mi-11 claim still gets its own warning.
+- **Gaps:** an expected risk that no control claims is a **GAP** (error). If AIGF says a mitigation the architecture uses covers it, it is shown as **GAP (possibly covered)** and gets an extra POSSIBLY COVERED, NOT CLAIMED warning. ri-19 deliberately appears in both views.
+- **Recommended actions:** every finding has a neutral, auditor-facing recommended action, shown in the text output, JSON and workbook.
+
 ## D4. Package layout (Python 3.10+, developed on 3.14)
 
 ```

@@ -32,6 +32,22 @@ DRAFT_REFERENCE = "DRAFT REFERENCE"
 
 _AIGF_ID_RE = re.compile(r"^(ri|mi)-\d+$")
 
+# Recommended actions, worded neutrally for an auditor (fixed text unless noted).
+ACTION_UNSUPPORTED_CLAIM = (
+    "Confirm the rationale for this mapping with the control owner, or remove the claim. "
+    "The AIGF catalogue doesn't list this risk for this mitigation."
+)
+ACTION_UNKNOWN_ID = "Correct the ID or update the AIGF snapshot."
+ACTION_DRAFT_REFERENCE = "Re-run the check when the AIGF item leaves Draft."
+
+
+def action_gap(risk_label: str) -> str:
+    return f"Add or identify a control that addresses {risk_label}, or document a risk-acceptance rationale."
+
+
+def action_possibly_covered(risk_id: str) -> str:
+    return f"Confirm and add {risk_id} to that control's aigf-risks, or record why it does not apply."
+
 
 class CoverageError(ValueError):
     """Raised when coverage cannot be computed (e.g. no expected risks can be determined)."""
@@ -46,6 +62,7 @@ class Finding:
     mitigation_id: str | None = None
     control_key: str | None = None
     elements: tuple[str, ...] = ()
+    recommended_action: str = ""
 
 
 @dataclass(frozen=True)
@@ -158,6 +175,7 @@ def compute_coverage(
                 risk_id=aigf_id if aigf_id.startswith("ri-") else None,
                 mitigation_id=aigf_id if aigf_id.startswith("mi-") else None,
                 control_key=control_key,
+                recommended_action=ACTION_UNKNOWN_ID,
             )
         )
 
@@ -194,6 +212,7 @@ def compute_coverage(
                 INFO,
                 f"The architecture's use case {use_case['id']} ({use_case.get('title')}) is marked "
                 f"Draft in AIGF, so its list of expected risks may still change.",
+                recommended_action=ACTION_DRAFT_REFERENCE,
             )
         )
 
@@ -240,6 +259,7 @@ def compute_coverage(
                         mitigation_id=i if i.startswith("mi-") else None,
                         control_key=c.control_key,
                         elements=c.elements,
+                        recommended_action=ACTION_DRAFT_REFERENCE,
                     )
                 )
 
@@ -258,6 +278,7 @@ def compute_coverage(
                         risk_id=r,
                         control_key=c.control_key,
                         elements=c.elements,
+                        recommended_action=ACTION_UNSUPPORTED_CLAIM,
                     )
                 )
             elif known_mis and not any(r in (cat.mitigations[m].get("mitigates") or []) for m in known_mis):
@@ -272,6 +293,7 @@ def compute_coverage(
                         mitigation_id=known_mis[0] if len(known_mis) == 1 else None,
                         control_key=c.control_key,
                         elements=c.elements,
+                        recommended_action=ACTION_UNSUPPORTED_CLAIM,
                     )
                 )
 
@@ -297,6 +319,7 @@ def compute_coverage(
                 f"{_title(cat, r)} is expected for {uc_label}, but no control in the architecture claims to "
                 f"address it.",
                 risk_id=r,
+                recommended_action=action_gap(_title(cat, r)),
             )
         )
         if r in implied:
@@ -306,10 +329,10 @@ def compute_coverage(
                     POSSIBLY_COVERED,
                     WARNING,
                     f"AIGF says {', '.join(_title(cat, m) for m in mis)}, which the architecture already uses, "
-                    f"mitigates {_title(cat, r)}, but no control claims it; confirm and add {r} to that "
-                    f"control's aigf-risks, or record why it does not apply.",
+                    f"mitigates {_title(cat, r)}, but no control claims it.",
                     risk_id=r,
                     mitigation_id=mis[0] if len(mis) == 1 else None,
+                    recommended_action=action_possibly_covered(r),
                 )
             )
 

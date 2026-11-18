@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
+from conftest import REPO_ROOT
 from gac_workbook.cli import EXIT_FINDINGS, EXIT_OK, EXIT_USAGE, main
 
 
@@ -55,3 +59,26 @@ def test_json_format(fixtures: Path, capsys) -> None:
     }
     assert data["claims_gaps"] == ["ri-903"]
     assert {f["finding_type"] for f in data["findings"]} == {"GAP", "UNSUPPORTED CLAIM", "DRAFT REFERENCE"}
+    assert all(f["recommended_action"] for f in data["findings"])
+
+
+def test_text_output_shows_recommended_action(fixtures: Path, capsys) -> None:
+    main(_args(fixtures))
+    assert "Recommended action: Add or identify a control that addresses ri-903" in capsys.readouterr().out
+
+
+def test_stdout_is_utf8_when_piped(fixtures: Path) -> None:
+    """The committed snapshot's attribution contains '©'; piped output must carry it as UTF-8."""
+    env = {k: v for k, v in os.environ.items() if k not in ("PYTHONUTF8", "PYTHONIOENCODING")}
+    proc = subprocess.run(
+        [
+            sys.executable, "-m", "gac_workbook.cli", "check",
+            "--arch", str(fixtures / "mini.calm.json"),
+            "--aigf", str(REPO_ROOT / "data" / "aigf-snapshot.json"),
+            "--expected-risks", "ri-1",
+        ],
+        capture_output=True,
+        env=env,
+    )
+    assert "© FINOS, CC-BY-4.0".encode("utf-8") in proc.stdout
+    proc.stdout.decode("utf-8")  # whole stream is valid UTF-8
