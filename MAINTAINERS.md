@@ -6,6 +6,7 @@ This file lists the maintainers of this repository.
 
 | GitHub Username | Name | Organization | Email (Optional) |
 |----------------|------|--------------|-------|
+| [@jiaxingxue](https://github.com/jiaxingxue) | Jiaxing (Chris) Xue | Individual | |
 
 For information about maintainer responsibilities and resources, see the [FINOS Maintainers Cheatsheet](https://community.finos.org/docs/finos-maintainers-cheatsheet).
 

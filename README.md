@@ -1,42 +1,41 @@
-# {project name}
+# Governance-as-Code Evidence Workbook
 
-**Hackathon Track:** {track name/number}
+**Hackathon Track:** 2 – Extend & Utilize FINOS Governance-as-Code
 
-Short blurb about what your project does.
+A CLI that reads a FINOS CALM architecture (from the Governance-as-Code Steel Thread), maps its controls to FINOS AI Governance Framework (AIGF) risks and mitigations, flags uncovered risks, and exports an auditor-ready Excel evidence workbook, with a CI check that fails when gaps exist.
+
+> **Status: work in progress.** Built during the FINOS Fall 2026 Hackathon. Features below are planned and may not be implemented yet.
+
+### The problem
+
+Governance-as-Code expresses AI controls as JSON (CALM architectures and control definitions). Auditors and second-line risk teams work in Excel. They can't easily trace a path from an AI risk to the control that addresses it and the evidence that the control is in place when that information lives only in JSON files spread across repositories.
+
+### Planned features
+
+- Read a CALM architecture document and collect the controls attached to its nodes, relationships and flows.
+- Map those controls to AIGF risks and mitigations using a small, source-attributed mapping file.
+- Flag AIGF risks that no control in the architecture covers.
+- Export an Excel workbook with one traceable row per risk → mitigation → control → evidence, plus a gaps sheet.
+- Provide a CI check (exit code non-zero) that fails a build when uncovered risks exist.
 
 ## Installation
 
-OS X & Linux:
-
-```sh
-npm install my-crazy-module --save
-```
-
-Windows:
-
-```sh
-edit autoexec.bat
-```
+> **TODO:** installation instructions will be added once the CLI exists.
 
 ## Usage example
 
-A few motivating and useful examples of how your project can be used. Spice this up with code blocks and potentially screenshots / videos.
+> **TODO:** usage examples will be added once the CLI exists.
 
 ## Development setup
 
-Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
-
-```sh
-make install
-npm test
-```
+> **TODO:** development dependencies and test commands will be added once the toolchain is chosen.
 
 ## Roadmap
 
 This project was built during a time-boxed FINOS hackathon. List below what you would like to achieve after the hackathon, if the project continues.
 
-1. {Goal after the hackathon}
-2. {Goal after the hackathon}
+1. Expand the CALM control → AIGF mapping beyond the Steel Thread example architecture.
+2. Link workbook rows to live evidence sources (CI runs, test reports) instead of static references.
 
 ## Contributing
 
