@@ -1,0 +1,627 @@
+{
+  "source": {
+    "repo": "https://github.com/finos/ai-governance-framework",
+    "commit": "67b8c3257695d5ede09d262798bf28a0e58d4740",
+    "license": "CC-BY-4.0",
+    "attribution": "© FINOS, CC-BY-4.0",
+    "catalogue_site": "https://air-governance-framework.finos.org/"
+  },
+  "generated_at": "2026-11-18T17:07:14Z",
+  "generator": "scripts/build_aigf_snapshot.py",
+  "content_note": "IDs, titles, status, links and catalogue URLs only; no body text.",
+  "parse_notes": [
+    "docs/_risks/ri-17_lack-of-explainability.md: duplicate key 'related_risks' merged -> ['ri-22', 'ri-16', 'ri-18']",
+    "docs/_risks/ri-2_information-leaked-to-vector-store.md: duplicate key 'related_risks' merged -> ['ri-1', 'ri-9']",
+    "docs/_usecases/uc-index.md: skipped (no front matter or not an uc-N_ file)"
+  ],
+  "risks": [
+    {
+      "id": "ri-1",
+      "title": "Information Leaked To Hosted Model",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-1_information-leaked-to-hosted-model.html",
+      "source_file": "docs/_risks/ri-1_information-leaked-to-hosted-model.md"
+    },
+    {
+      "id": "ri-2",
+      "title": "Information Leaked to Vector Store",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-2_information-leaked-to-vector-store.html",
+      "source_file": "docs/_risks/ri-2_information-leaked-to-vector-store.md"
+    },
+    {
+      "id": "ri-4",
+      "title": "Hallucination and Inaccurate Outputs",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-4_hallucination-and-inaccurate-outputs.html",
+      "source_file": "docs/_risks/ri-4_hallucination-and-inaccurate-outputs.md"
+    },
+    {
+      "id": "ri-5",
+      "title": "Foundation Model Versioning",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-5_foundation-model-versioning.html",
+      "source_file": "docs/_risks/ri-5_foundation-model-versioning.md"
+    },
+    {
+      "id": "ri-6",
+      "title": "Non-Deterministic Behaviour",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-6_non-deterministic-behaviour.html",
+      "source_file": "docs/_risks/ri-6_non-deterministic-behaviour.md"
+    },
+    {
+      "id": "ri-7",
+      "title": "Availability of Foundational Model",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-7_availability-of-foundational-model.html",
+      "source_file": "docs/_risks/ri-7_availability-of-foundational-model.md"
+    },
+    {
+      "id": "ri-8",
+      "title": "Tampering With the Foundational Model",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-8_tampering-with-the-foundational-model.html",
+      "source_file": "docs/_risks/ri-8_tampering-with-the-foundational-model.md"
+    },
+    {
+      "id": "ri-9",
+      "title": "Data Poisoning",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-9_data-poisoning.html",
+      "source_file": "docs/_risks/ri-9_data-poisoning.md"
+    },
+    {
+      "id": "ri-10",
+      "title": "Prompt Injection",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-10_prompt-injection.html",
+      "source_file": "docs/_risks/ri-10_prompt-injection.md"
+    },
+    {
+      "id": "ri-14",
+      "title": "Inadequate System Alignment",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-14_inadequate-system-alignment.html",
+      "source_file": "docs/_risks/ri-14_inadequate-system-alignment.md"
+    },
+    {
+      "id": "ri-16",
+      "title": "Bias and Discrimination",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-16_bias-and-discrimination.html",
+      "source_file": "docs/_risks/ri-16_bias-and-discrimination.md"
+    },
+    {
+      "id": "ri-17",
+      "title": "Lack of Explainability",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-17_lack-of-explainability.html",
+      "source_file": "docs/_risks/ri-17_lack-of-explainability.md"
+    },
+    {
+      "id": "ri-18",
+      "title": "Model Overreach / Expanded Use",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-18_model-overreach-expanded-use.html",
+      "source_file": "docs/_risks/ri-18_model-overreach-expanded-use.md"
+    },
+    {
+      "id": "ri-19",
+      "title": "Data Quality and Drift",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-19_data-quality-and-drift.html",
+      "source_file": "docs/_risks/ri-19_data-quality-and-drift.md"
+    },
+    {
+      "id": "ri-20",
+      "title": "Reputational Risk",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-20_reputational-risk.html",
+      "source_file": "docs/_risks/ri-20_reputational-risk.md"
+    },
+    {
+      "id": "ri-22",
+      "title": "Regulatory Compliance and Oversight",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-22_regulatory-compliance-and-oversight.html",
+      "source_file": "docs/_risks/ri-22_regulatory-compliance-and-oversight.md"
+    },
+    {
+      "id": "ri-23",
+      "title": "Intellectual Property (IP) and Copyright",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-23_intellectual-property-ip-and-copyright.html",
+      "source_file": "docs/_risks/ri-23_intellectual-property-ip-and-copyright.md"
+    },
+    {
+      "id": "ri-24",
+      "title": "Agent Action Authorization Bypass",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-24_agent-action-authorization-bypass.html",
+      "source_file": "docs/_risks/ri-24_agent-action-authorization-bypass.md"
+    },
+    {
+      "id": "ri-25",
+      "title": "Tool Chain Manipulation and Injection",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-25_tool-chain-manipulation-and-injection.html",
+      "source_file": "docs/_risks/ri-25_tool-chain-manipulation-and-injection.md"
+    },
+    {
+      "id": "ri-26",
+      "title": "MCP Server Supply Chain Compromise",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-26_mcp-server-supply-chain-compromise.html",
+      "source_file": "docs/_risks/ri-26_mcp-server-supply-chain-compromise.md"
+    },
+    {
+      "id": "ri-27",
+      "title": "Agent State Persistence Poisoning",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-27_agent-state-persistence-poisoning.html",
+      "source_file": "docs/_risks/ri-27_agent-state-persistence-poisoning.md"
+    },
+    {
+      "id": "ri-28",
+      "title": "Multi-Agent Trust Boundary Violations",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-28_multi-agent-trust-boundary-violations.html",
+      "source_file": "docs/_risks/ri-28_multi-agent-trust-boundary-violations.md"
+    },
+    {
+      "id": "ri-29",
+      "title": "Agent-Mediated Credential Discovery and Harvesting",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/risks/ri-29_agent-mediated-credential-discovery-and-harvesting.html",
+      "source_file": "docs/_risks/ri-29_agent-mediated-credential-discovery-and-harvesting.md"
+    },
+    {
+      "id": "ri-30",
+      "title": "Skill/Plugin Supply Chain Compromise",
+      "doc_status": "Draft",
+      "draft": true,
+      "url": "https://air-governance-framework.finos.org/risks/ri-30_skill-plugin-supply-chain-compromise.html",
+      "source_file": "docs/_risks/ri-30_skill-plugin-supply-chain-compromise.md"
+    }
+  ],
+  "mitigations": [
+    {
+      "id": "mi-1",
+      "title": "AI Data Leakage Prevention and Detection",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-1_ai-data-leakage-prevention-and-detection.html",
+      "source_file": "docs/_mitigations/mi-1_ai-data-leakage-prevention-and-detection.md",
+      "mitigates": [
+        "ri-1"
+      ]
+    },
+    {
+      "id": "mi-2",
+      "title": "Data Filtering From External Knowledge Bases",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-2_data-filtering-from-external-knowledge-bases.html",
+      "source_file": "docs/_mitigations/mi-2_data-filtering-from-external-knowledge-bases.md",
+      "mitigates": [
+        "ri-1",
+        "ri-9"
+      ]
+    },
+    {
+      "id": "mi-3",
+      "title": "User/App/Model Firewalling/Filtering",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-3_user-app-model-firewalling-filtering.html",
+      "source_file": "docs/_mitigations/mi-3_user-app-model-firewalling-filtering.md",
+      "mitigates": [
+        "ri-7",
+        "ri-10",
+        "ri-18",
+        "ri-20"
+      ]
+    },
+    {
+      "id": "mi-4",
+      "title": "AI System Observability",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-4_ai-system-observability.html",
+      "source_file": "docs/_mitigations/mi-4_ai-system-observability.md",
+      "mitigates": [
+        "ri-1",
+        "ri-5",
+        "ri-6",
+        "ri-7",
+        "ri-14",
+        "ri-18",
+        "ri-19",
+        "ri-24",
+        "ri-25",
+        "ri-26",
+        "ri-27",
+        "ri-28",
+        "ri-29"
+      ]
+    },
+    {
+      "id": "mi-5",
+      "title": "System Acceptance Testing",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-5_system-acceptance-testing.html",
+      "source_file": "docs/_mitigations/mi-5_system-acceptance-testing.md",
+      "mitigates": [
+        "ri-4",
+        "ri-5",
+        "ri-6",
+        "ri-14",
+        "ri-16",
+        "ri-22"
+      ]
+    },
+    {
+      "id": "mi-6",
+      "title": "Data Quality & Classification/Sensitivity",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-6_data-quality-classification-sensitivity.html",
+      "source_file": "docs/_mitigations/mi-6_data-quality-classification-sensitivity.md",
+      "mitigates": [
+        "ri-1",
+        "ri-2",
+        "ri-4",
+        "ri-9",
+        "ri-16",
+        "ri-19",
+        "ri-22",
+        "ri-23"
+      ]
+    },
+    {
+      "id": "mi-7",
+      "title": "Legal and Contractual Frameworks for AI Systems",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-7_legal-and-contractual-frameworks-for-ai-systems.html",
+      "source_file": "docs/_mitigations/mi-7_legal-and-contractual-frameworks-for-ai-systems.md",
+      "mitigates": [
+        "ri-1",
+        "ri-8",
+        "ri-20",
+        "ri-22",
+        "ri-23"
+      ]
+    },
+    {
+      "id": "mi-8",
+      "title": "Quality of Service (QoS) and DDoS Prevention for AI Systems",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-8_quality-of-service-qos-and-ddos-prevention-for-ai-systems.html",
+      "source_file": "docs/_mitigations/mi-8_quality-of-service-qos-and-ddos-prevention-for-ai-systems.md",
+      "mitigates": [
+        "ri-7"
+      ]
+    },
+    {
+      "id": "mi-9",
+      "title": "AI System Alerting and Denial of Wallet (DoW) / Spend Monitoring",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-9_ai-system-alerting-and-denial-of-wallet-dow-spend-monitoring.html",
+      "source_file": "docs/_mitigations/mi-9_ai-system-alerting-and-denial-of-wallet-dow-spend-monitoring.md",
+      "mitigates": [
+        "ri-7"
+      ]
+    },
+    {
+      "id": "mi-10",
+      "title": "AI Model Version Pinning",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-10_ai-model-version-pinning.html",
+      "source_file": "docs/_mitigations/mi-10_ai-model-version-pinning.md",
+      "mitigates": [
+        "ri-5",
+        "ri-6"
+      ]
+    },
+    {
+      "id": "mi-11",
+      "title": "Human Feedback Loop for AI Systems",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-11_human-feedback-loop-for-ai-systems.html",
+      "source_file": "docs/_mitigations/mi-11_human-feedback-loop-for-ai-systems.md",
+      "mitigates": [
+        "ri-5",
+        "ri-6",
+        "ri-14",
+        "ri-16",
+        "ri-18",
+        "ri-20"
+      ]
+    },
+    {
+      "id": "mi-12",
+      "title": "Role-Based Access Control for AI Data",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-12_role-based-access-control-for-ai-data.html",
+      "source_file": "docs/_mitigations/mi-12_role-based-access-control-for-ai-data.md",
+      "mitigates": [
+        "ri-1",
+        "ri-8",
+        "ri-9"
+      ]
+    },
+    {
+      "id": "mi-13",
+      "title": "Providing Citations and Source Traceability for AI-Generated Information",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-13_providing-citations-and-source-traceability-for-ai-generated-information.html",
+      "source_file": "docs/_mitigations/mi-13_providing-citations-and-source-traceability-for-ai-generated-information.md",
+      "mitigates": [
+        "ri-4",
+        "ri-17",
+        "ri-20",
+        "ri-22"
+      ]
+    },
+    {
+      "id": "mi-14",
+      "title": "Encryption of AI Data at Rest",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-14_encryption-of-ai-data-at-rest.html",
+      "source_file": "docs/_mitigations/mi-14_encryption-of-ai-data-at-rest.md",
+      "mitigates": [
+        "ri-2",
+        "ri-22"
+      ]
+    },
+    {
+      "id": "mi-15",
+      "title": "Using Large Language Models for Automated Evaluation (LLM-as-a-Judge)",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-15_using-large-language-models-for-automated-evaluation-llm-as-a-judge-.html",
+      "source_file": "docs/_mitigations/mi-15_using-large-language-models-for-automated-evaluation-llm-as-a-judge-.md",
+      "mitigates": [
+        "ri-1",
+        "ri-4",
+        "ri-5",
+        "ri-6",
+        "ri-14",
+        "ri-16",
+        "ri-19"
+      ]
+    },
+    {
+      "id": "mi-16",
+      "title": "Preserving Source Data Access Controls in AI Systems",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-16_preserving-source-data-access-controls-in-ai-systems.html",
+      "source_file": "docs/_mitigations/mi-16_preserving-source-data-access-controls-in-ai-systems.md",
+      "mitigates": [
+        "ri-2",
+        "ri-22"
+      ]
+    },
+    {
+      "id": "mi-17",
+      "title": "AI Firewall Implementation and Management",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-17_ai-firewall-implementation-and-management.html",
+      "source_file": "docs/_mitigations/mi-17_ai-firewall-implementation-and-management.md",
+      "mitigates": [
+        "ri-7",
+        "ri-10",
+        "ri-18",
+        "ri-20"
+      ]
+    },
+    {
+      "id": "mi-18",
+      "title": "Agent Authority Least Privilege Framework",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-18_agent-authority-least-privilege-framework.html",
+      "source_file": "docs/_mitigations/mi-18_agent-authority-least-privilege-framework.md",
+      "mitigates": [
+        "ri-24",
+        "ri-18"
+      ]
+    },
+    {
+      "id": "mi-19",
+      "title": "Tool Chain Validation and Sanitization",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-19_tool-chain-validation-and-sanitization.html",
+      "source_file": "docs/_mitigations/mi-19_tool-chain-validation-and-sanitization.md",
+      "mitigates": [
+        "ri-25",
+        "ri-10",
+        "ri-24"
+      ]
+    },
+    {
+      "id": "mi-20",
+      "title": "MCP Server Security Governance",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-20_mcp-server-security-governance.html",
+      "source_file": "docs/_mitigations/mi-20_mcp-server-security-governance.md",
+      "mitigates": [
+        "ri-26",
+        "ri-8",
+        "ri-1"
+      ]
+    },
+    {
+      "id": "mi-21",
+      "title": "Agent Decision Audit and Explainability",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-21_agent-decision-audit-and-explainability.html",
+      "source_file": "docs/_mitigations/mi-21_agent-decision-audit-and-explainability.md",
+      "mitigates": [
+        "ri-24",
+        "ri-25",
+        "ri-22"
+      ]
+    },
+    {
+      "id": "mi-22",
+      "title": "Multi-Agent Isolation and Segmentation",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-22_multi-agent-isolation-and-segmentation.html",
+      "source_file": "docs/_mitigations/mi-22_multi-agent-isolation-and-segmentation.md",
+      "mitigates": [
+        "ri-28",
+        "ri-24",
+        "ri-27"
+      ]
+    },
+    {
+      "id": "mi-23",
+      "title": "Agentic System Credential Protection Framework",
+      "doc_status": "Approved-Specification",
+      "draft": false,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-23_agentic-system-credential-protection-framework.html",
+      "source_file": "docs/_mitigations/mi-23_agentic-system-credential-protection-framework.md",
+      "mitigates": [
+        "ri-29",
+        "ri-24",
+        "ri-26"
+      ]
+    },
+    {
+      "id": "mi-24",
+      "title": "Human-in-the-Loop Action Approval Gate",
+      "doc_status": "Draft",
+      "draft": true,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-24_human-in-the-loop-action-approval-gate.html",
+      "source_file": "docs/_mitigations/mi-24_human-in-the-loop-action-approval-gate.md",
+      "mitigates": [
+        "ri-24",
+        "ri-18",
+        "ri-22"
+      ]
+    },
+    {
+      "id": "mi-25",
+      "title": "Skill/Plugin Integrity and Governance",
+      "doc_status": "Draft",
+      "draft": true,
+      "url": "https://air-governance-framework.finos.org/mitigations/mi-25_skill-plugin-integrity-and-governance.html",
+      "source_file": "docs/_mitigations/mi-25_skill-plugin-integrity-and-governance.md",
+      "mitigates": [
+        "ri-30",
+        "ri-8",
+        "ri-9"
+      ]
+    }
+  ],
+  "use_cases": [
+    {
+      "id": "uc-1_credit-risk-analysis",
+      "title": "Credit Risk Analysis",
+      "doc_status": "Draft",
+      "draft": true,
+      "url": "https://air-governance-framework.finos.org/usecase/uc-1_credit-risk-analysis/",
+      "source_file": "docs/_usecases/uc-1_credit-risk-analysis.md",
+      "short_id": "uc-1",
+      "related_risks": [
+        "ri-1",
+        "ri-4",
+        "ri-17",
+        "ri-19"
+      ]
+    },
+    {
+      "id": "uc-2_autonomous-wealth-management",
+      "title": "Autonomous Wealth Management",
+      "doc_status": "Draft",
+      "draft": true,
+      "url": "https://air-governance-framework.finos.org/usecase/uc-2_autonomous-wealth-management/",
+      "source_file": "docs/_usecases/uc-2_autonomous-wealth-management.md",
+      "short_id": "uc-2",
+      "related_risks": [
+        "ri-1",
+        "ri-4",
+        "ri-6",
+        "ri-14",
+        "ri-17",
+        "ri-19"
+      ]
+    },
+    {
+      "id": "uc-3_loan-approval",
+      "title": "Loan Approval",
+      "doc_status": "Draft",
+      "draft": true,
+      "url": "https://air-governance-framework.finos.org/usecase/uc-3_loan-approval/",
+      "source_file": "docs/_usecases/uc-3_loan-approval.md",
+      "short_id": "uc-3",
+      "related_risks": [
+        "ri-1",
+        "ri-4",
+        "ri-6",
+        "ri-14",
+        "ri-17",
+        "ri-19"
+      ]
+    },
+    {
+      "id": "uc-4_anti-financial-crime-investigation",
+      "title": "Anti-Financial Crime Investigation",
+      "doc_status": "Draft",
+      "draft": true,
+      "url": "https://air-governance-framework.finos.org/usecase/uc-4_anti-financial-crime-investigation/",
+      "source_file": "docs/_usecases/uc-4_anti-financial-crime-investigation.md",
+      "short_id": "uc-4",
+      "related_risks": [
+        "ri-1",
+        "ri-2",
+        "ri-4",
+        "ri-10",
+        "ri-17",
+        "ri-18",
+        "ri-19",
+        "ri-22"
+      ]
+    }
+  ]
+}

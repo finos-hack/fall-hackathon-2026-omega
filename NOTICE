@@ -2,3 +2,8 @@ Governance-as-Code Evidence Workbook
 Copyright 2026 Jiaxing Xue
 
 This product includes software developed at the Fintech Open Source Foundation (https://www.finos.org/).
+
+data/aigf-snapshot.json contains identifiers, titles, status, links and catalogue URLs
+extracted from the FINOS AI Governance Framework (https://github.com/finos/ai-governance-framework,
+commit 67b8c3257695d5ede09d262798bf28a0e58d4740). © FINOS, CC-BY-4.0
+(https://creativecommons.org/licenses/by/4.0/). Body text is not included.

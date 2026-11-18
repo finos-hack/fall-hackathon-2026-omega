@@ -1,0 +1,27 @@
+{
+  "source": {
+    "repo": "synthetic-test-fixture",
+    "commit": "0000000000000000000000000000000000000000",
+    "license": "Apache-2.0",
+    "attribution": "Synthetic test fixture for gac-evidence-workbook; not AIGF content.",
+    "catalogue_site": "https://example.invalid/"
+  },
+  "generated_at": "2026-11-18T00:00:00Z",
+  "generator": "hand-written",
+  "content_note": "SYNTHETIC TEST FIXTURE. Same shape as data/aigf-snapshot.json, but every ID and title is fake.",
+  "parse_notes": [],
+  "risks": [
+    {"id": "ri-901", "title": "Synthetic risk: data leaves the boundary", "doc_status": "Approved-Specification", "draft": false, "url": "https://example.invalid/risks/ri-901.html", "source_file": "synthetic"},
+    {"id": "ri-902", "title": "Synthetic risk: unstable outputs", "doc_status": "Approved-Specification", "draft": false, "url": "https://example.invalid/risks/ri-902.html", "source_file": "synthetic"},
+    {"id": "ri-903", "title": "Synthetic risk: unexplained decisions", "doc_status": "Approved-Specification", "draft": false, "url": "https://example.invalid/risks/ri-903.html", "source_file": "synthetic"},
+    {"id": "ri-904", "title": "Synthetic risk: model overreach", "doc_status": "Draft", "draft": true, "url": "https://example.invalid/risks/ri-904.html", "source_file": "synthetic"}
+  ],
+  "mitigations": [
+    {"id": "mi-901", "title": "Synthetic leakage guard", "doc_status": "Approved-Specification", "draft": false, "mitigates": ["ri-901"], "url": "https://example.invalid/mitigations/mi-901.html", "source_file": "synthetic"},
+    {"id": "mi-902", "title": "Synthetic review loop", "doc_status": "Approved-Specification", "draft": false, "mitigates": ["ri-904"], "url": "https://example.invalid/mitigations/mi-902.html", "source_file": "synthetic"},
+    {"id": "mi-903", "title": "Synthetic draft mitigation (unused)", "doc_status": "Draft", "draft": true, "mitigates": ["ri-903"], "url": "https://example.invalid/mitigations/mi-903.html", "source_file": "synthetic"}
+  ],
+  "use_cases": [
+    {"id": "uc-901_synthetic-lending", "short_id": "uc-901", "title": "Synthetic Lending", "doc_status": "Draft", "draft": true, "related_risks": ["ri-901", "ri-902", "ri-903"], "url": "https://example.invalid/usecase/uc-901_synthetic-lending/", "source_file": "synthetic"}
+  ]
+}

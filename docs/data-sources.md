@@ -58,7 +58,8 @@ The architecture contains no Common Cloud Controls (`CCC.*`) IDs.
 
 **Extraction:** Parse the YAML front matter of each `ri-*`, `mi-*` and `uc-*` file, keeping only `id` (from the filename), `title`, `type`, `domain`, `doc-status`, `mitigates`, `related_risks` and `related_mitigations`. Save the result as a small generated JSON snapshot with the source commit SHA. Body text is not copied.
 
-- Parser caveat: `ri-17` declares `related_risks` twice (one empty), so a strict YAML loader that rejects duplicate keys will fail on it.
+- Parser caveat: `ri-17` **and `ri-2`** each declare `related_risks` twice (first empty, then populated), so a strict YAML loader that rejects duplicate keys will fail on them. PyYAML `safe_load` silently keeps the last value. Our loader merges the lists and records a parse note (checked by a full scan of `docs/_*/*.md` on 2026-11-18; no other duplicate keys).
+- `docs/_usecases/uc-index.md` is a taxonomy page with no front matter, not a use case. All four use cases (uc-1 to uc-4), including `uc-3_loan-approval`, are `doc-status: Draft`.
 - The catalogue site is `https://air-governance-framework.finos.org/` (the repo's `docs/CNAME`). The Steel Thread's `aigf-catalog-url` values point there.
 
 ## 3. Common Cloud Controls (optional, not used yet)
