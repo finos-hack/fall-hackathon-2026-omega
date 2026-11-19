@@ -38,4 +38,4 @@
 
 - **POC issue:** none yet. A license request to the Steel Thread maintainers is drafted in [docs/upstream-issue-license.md](docs/upstream-issue-license.md).
 
-- **Demo:** VIDEO_LINK_HERE. Shows `check` finding the Steel Thread gaps, the exported workbook (Summary, Traceability, Findings, Evidence Checklist), and the red-by-design CI run with the workbook artifact.
+- **Demo:** live presentation on Friday Nov 20; see README screenshots and the GitHub Actions job summary (latest run) for the full results.
