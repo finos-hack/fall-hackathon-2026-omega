@@ -6,6 +6,8 @@
 
 **Presentation:** [Slides (PDF)](Presentations/omega-presentation.pdf)
 
+**Demo video:** [Watch on YouTube](https://youtu.be/iXYfnG2eZj4)
+
 A CLI that reads a FINOS CALM architecture, traces its controls to FINOS AI Governance Framework (AIGF) risks and mitigations, flags uncovered risks and inconsistent claims, and exports an auditor-ready Excel evidence workbook. A CI check fails when gaps exist.
 
 ## Why
