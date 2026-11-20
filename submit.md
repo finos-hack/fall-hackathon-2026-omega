@@ -39,3 +39,5 @@
 - **POC issue:** none yet. A license request to the Steel Thread maintainers is drafted in [docs/upstream-issue-license.md](docs/upstream-issue-license.md).
 
 - **Demo:** live presentation on Friday Nov 20; see README screenshots and the GitHub Actions job summary (latest run) for the full results.
+
+- **Presentation:** https://github.com/finos-hack/fall-hackathon-2026-omega/blob/main/Presentations/omega-presentation.pdf

@@ -4,6 +4,8 @@
 
 [![governance-check](https://github.com/finos-hack/fall-hackathon-2026-omega/actions/workflows/governance-check.yml/badge.svg)](https://github.com/finos-hack/fall-hackathon-2026-omega/actions/workflows/governance-check.yml) Red is expected: the check finds 2 real AIGF coverage gaps (ri-17, ri-19) in the FINOS Steel Thread. See [Findings](#results-on-the-finos-steel-thread).
 
+**Presentation:** [Slides (PDF)](Presentations/omega-presentation.pdf)
+
 A CLI that reads a FINOS CALM architecture, traces its controls to FINOS AI Governance Framework (AIGF) risks and mitigations, flags uncovered risks and inconsistent claims, and exports an auditor-ready Excel evidence workbook. A CI check fails when gaps exist.
 
 ## Why
